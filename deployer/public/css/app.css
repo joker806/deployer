@@ -1,0 +1,33 @@
+.container {
+	width: 1200px;
+}
+
+#console-output {
+    font-family: monospace;
+    white-space: pre;
+    overflow-x: scroll;
+
+    padding: 5px;
+    border-radius: 5px;
+
+	font-size: 10px;
+	background-color: #000000;
+	color: graytext;
+
+	-webkit-transition: background-color 1000ms linear;
+	-moz-transition: background-color 1000ms linear;
+	-o-transition: background-color 1000ms linear;
+	-ms-transition: background-color 1000ms linear;
+	transition: background-color 1000ms linear;
+}
+
+#console-output.running {
+	background: #696969 url('../running.gif') no-repeat bottom right;
+	color: white;
+
+	-webkit-transition: background-color 1000ms linear;
+	-moz-transition: background-color 1000ms linear;
+	-o-transition: background-color 1000ms linear;
+	-ms-transition: background-color 1000ms linear;
+	transition: background-color 1000ms linear;
+}
