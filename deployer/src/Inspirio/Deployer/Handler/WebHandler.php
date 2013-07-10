@@ -1,6 +1,7 @@
 <?php
 namespace Inspirio\Deployer\Handler;
 
+use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\ConfigAware;
 use Inspirio\Deployer\Module\ModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
@@ -24,9 +25,9 @@ class WebHandler extends Handler
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __construct($projectDir, array $modules, array $security = array())
+	public function __construct(ApplicationInterface $app, array $modules, array $security = array())
 	{
-		parent::__construct($projectDir, $modules);
+		parent::__construct($app, $modules);
         $this->security = $security;
 	}
 
@@ -140,18 +141,9 @@ class WebHandler extends Handler
      */
 	private function renderModule(ModuleInterface $activeModule, Request $request)
 	{
+        $app     = $this->app;
+        $project = $app->getProjectInfo();
         $modules = $this->modules;
-
-		if ($composerJson = $this->findFile('composer.json')) {
-			$project = json_decode(file_get_contents($composerJson), true);
-		} else {
-			$project = array(
-				'name'    => 'unknown',
-				'version' => '0.0',
-			);
-		}
-
-        $project['rootDir'] = realpath($this->projectDir);
 
 		ob_start();
 		require __DIR__ . '/view/index.html.php';

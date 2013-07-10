@@ -10,6 +10,7 @@ $modules = array(
     new \Inspirio\Deployer\Module\Deployment\DeploymentModule(),
     new \Inspirio\Deployer\Module\Configuration\ConfigurationModule(),
     new \Inspirio\Deployer\Module\Maintenance\MaintenanceModule(),
+    new \Inspirio\Deployer\Module\Database\DatabaseModule(),
 );
 
 $security = array(
@@ -22,19 +23,28 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 ini_set('html_errors', 'On');
 
-$dirName = __DIR__;
+$appDir = __DIR__;
 
-if (substr($dirName, 0, 7) === 'phar://') {
-	$dirName = substr($dirName, 7);
-	$dirName = dirname($dirName);
+// PHAR environment
+if (substr($appDir, 0, 7) === 'phar://') {
+	$appDir = substr($appDir, 7);
+	$appDir = dirname($appDir);
+
+// development environment
+} else {
+    $appDir = $appDir .'/../project';
+
+    if (!file_exists($appDir)) {
+        mkdir($appDir);
+    }
 }
 
-$dirName = __DIR__ .'/../project';
+$app = new \Inspirio\Deployer\Application\LazyCms2($appDir);
 
 if (PHP_SAPI === 'cli') {
-	$controller = new CliHandler($dirName, $modules);
+	$controller = new CliHandler($app, $modules);
 } else {
-	$controller = new WebHandler($dirName, $modules, $security);
+	$controller = new WebHandler($app, $modules, $security);
 }
 
 echo $controller->dispatch();

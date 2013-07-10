@@ -14,8 +14,8 @@
 <body>
 	<div class="container">
 		<div class="masthead">
-            <p class="pull-right muted"><?php echo $project['rootDir'] ?></p>
-			<h3><a href="?"><?php echo $project['name'] ?> <small>v<?php echo $project['version'] ?></small></a></h3>
+            <p class="pull-right muted"><?php echo $app->getRootPath() ?></p>
+			<h3><a href="?"><?php echo $project['name'] ?> <small><?php echo $project['version'] ?></small></a></h3>
 		</div>
 
 		<hr>

@@ -168,6 +168,7 @@ class SubversionCommand extends ProcessCommand
 			->add('--non-interactive')
 			->add('--trust-server-cert')
 			->add('--no-auth-cache')
+            ->setTimeout(60 * 10)
 		;
 	}
 

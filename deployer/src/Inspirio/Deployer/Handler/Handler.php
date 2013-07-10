@@ -1,10 +1,10 @@
 <?php
 namespace Inspirio\Deployer\Handler;
 
+use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Config\ConfigAware;
 use Inspirio\Deployer\Module\ModuleInterface;
-use Inspirio\Deployer\Command\CommandManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -19,10 +19,10 @@ abstract class Handler
 {
     const CONFIG_FILE = 'deployer.yml';
 
-	/**
-	 * @var string
-	 */
-	protected $projectDir;
+    /**
+     * @var ApplicationInterface
+     */
+    protected $app;
 
     /**
      * @var Config
@@ -37,18 +37,12 @@ abstract class Handler
     /**
      * Constructor.
      *
-     * @param string            $projectDir
-     * @param ModuleInterface[] $modules
-     *
-     * @throws \LogicException
+     * @param ApplicationInterface $app
+     * @param ModuleInterface[]    $modules
      */
-	public function __construct($projectDir, array $modules)
+	public function __construct(ApplicationInterface $app, array $modules)
 	{
-        if (!file_exists($projectDir)) {
-            throw new \LogicException("Project directory '{$projectDir}' does not exist.");
-        }
-
-		$this->projectDir = realpath($projectDir);
+		$this->app        = $app;
         $this->config     = new Config(self::CONFIG_FILE);
 		$this->setupModules($modules);
 	}
@@ -66,7 +60,7 @@ abstract class Handler
 	 */
 	public function findFile($fileName)
 	{
-		return realpath($this->projectDir .'/'. $fileName) ?: null;
+		return realpath($this->app->getRootPath() .'/'. $fileName) ?: null;
 	}
 
     /**
@@ -155,7 +149,7 @@ abstract class Handler
 
 		foreach ($modules as $module) {
 			$this->modules[$module->getName()] = $module;
-            $module->setProjectDir($this->projectDir);
+            $module->setProjectDir($this->app->getRootPath());
 
             if ($module instanceof ConfigAware) {
                 $module->setConfig($this->config);

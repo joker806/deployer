@@ -9,7 +9,7 @@ use Inspirio\Deployer\Command\SymfonyCommand;
 use Inspirio\Deployer\Deployer;
 use Symfony\Component\Yaml\Yaml;
 
-class DatabaseAction extends Module
+class DatabaseModule extends Module
 {
 	/**
 	 * {@inheritdoc}
@@ -19,32 +19,30 @@ class DatabaseAction extends Module
 		return '<i class="icon-hdd"></i> Database';
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isEnabled()
-	{
-		return file_exists($this->projectDir .'/app/config/parameters.yml');
-	}
+    /**
+     * List of module sections.
+     *
+     * @return array
+     */
+    protected function getSections()
+    {
+        return array(
+	        'console' => 'Console'
+        );
+    }
 
 	/**
-	 * {@inheritdoc}
+	 * Returns 'console' template data.
+	 *
+	 * @return bool|array
 	 */
-	public function handlePost(array $data)
+	protected function renderConsole()
 	{
-
-
-		return array();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function render(array $query)
-	{
-		return $this->renderTemplate('base', array(
-
-		));
+		return array(
+			'repoUrl'   => 'https://svn.inspirio.cz/inspirio/projects/',
+			'env'       => 'prod',
+			'revision'  => 'HEAD',
+		);
 	}
 
 	/**

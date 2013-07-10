@@ -218,7 +218,7 @@ abstract class Module implements ModuleInterface, ConfigAware
 
 		$data['action']     = $this;
 		$data['currentUrl'] = '?module='. $this->getName();
-        $data['projectDir'] = $this->projectDir;
+        $data['appDir'] = $this->projectDir;
 
 		return $this->doRenderTemplate($templateFile, $data);
 	}
