@@ -1,7 +1,7 @@
 <?php
 
 use Inspirio\Deployer\Handler\CliHandler;
-use Inspirio\Deployer\Handler\WebHandler;
+use Inspirio\Deployer\RequestHandler;
 
 require 'vendor/autoload.php';
 
@@ -40,11 +40,6 @@ if (substr($appDir, 0, 7) === 'phar://') {
 }
 
 $app = new \Inspirio\Deployer\Application\LazyCms2($appDir);
-
-if (PHP_SAPI === 'cli') {
-	$controller = new CliHandler($app, $modules);
-} else {
-	$controller = new WebHandler($app, $modules, $security);
-}
+$controller = new RequestHandler(__DIR__, $app, $modules, $security);
 
 echo $controller->dispatch();
