@@ -1,9 +1,9 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
-use Inspirio\Deployer\Module\ModuleInterface;
+use Inspirio\Deployer\Bootstrap\StarterModuleInterface;
+use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Security\SecurityInterface;
-use Inspirio\Deployer\Starter\StarterInterface;
 
 interface ApplicationInterface {
 
@@ -33,14 +33,14 @@ interface ApplicationInterface {
     /**
      * Returns application started module.
      *
-     * @return StarterInterface[]
+     * @return StarterModuleInterface[]
      */
     public function getStarted();
 
     /**
      * Returns application-registered modules.
      *
-     * @return ModuleInterface[]
+     * @return ActionModuleInterface[]
      */
     public function getModules();
 

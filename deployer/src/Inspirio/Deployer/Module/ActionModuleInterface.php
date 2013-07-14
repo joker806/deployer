@@ -1,5 +1,7 @@
 <?php
 namespace Inspirio\Deployer\Module;
+
+use Inspirio\Deployer\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -7,17 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @author Josef Martinec <josef.martinec@inspirio.cz>
  */
-interface ModuleInterface
+interface ActionModuleInterface extends ModuleInterface
 {
-	/**
-	 * Sets the application root dir.
-	 *
-	 * This path can be used to access the target application filesystem.
-	 *
-	 * @param string $projectDir
-	 */
-	public function setProjectDir($projectDir);
-
 	/**
 	 * Returns action name. Must be plain string without spaces.
 	 *
@@ -38,12 +31,4 @@ interface ModuleInterface
 	 * @return bool
 	 */
 	public function isEnabled();
-
-    /**
-     * Renders the action user interface.
-     *
-     * @param Request $request
-     * @return string
-     */
-	public function render(Request $request);
 }

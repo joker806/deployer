@@ -4,8 +4,7 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Config\ConfigAware;
-use Inspirio\Deployer\Handler\Handler;
-use Inspirio\Deployer\Module\ModuleInterface;
+use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
 use Inspirio\Deployer\Security\SecurityInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +42,7 @@ class RequestHandler
     private $security;
 
     /**
-     * @var ModuleInterface[]
+     * @var ActionModuleInterface[]
      */
     private $modules;
 
@@ -52,7 +51,7 @@ class RequestHandler
      *
      * @param string               $deployerDir
      * @param ApplicationInterface $app
-     * @param ModuleInterface[]    $modules
+     * @param ActionModuleInterface[]    $modules
      * @param SecurityInterface[]  $security
      */
     public function __construct($deployerDir, ApplicationInterface $app, array $modules, array $security = array())
@@ -87,7 +86,7 @@ class RequestHandler
     /**
      * Runs the action.
      *
-     * @param ModuleInterface $module
+     * @param ActionModuleInterface $module
      * @param string          $action
      * @param array           $args
      * @return Response
@@ -95,7 +94,7 @@ class RequestHandler
      * @throws \LogicException
      * @throws \InvalidArgumentException
      */
-    public function runAction(ModuleInterface $module, $action, array $args)
+    public function runAction(ActionModuleInterface $module, $action, array $args)
     {
         $actionRefl = null;
 
@@ -238,7 +237,7 @@ class RequestHandler
      * Returns module instance.
      *
      * @param string $moduleName
-     * @return ModuleInterface|null
+     * @return ActionModuleInterface|null
      */
     private function findModule($moduleName)
     {
@@ -266,11 +265,11 @@ class RequestHandler
     /**
      * Renders the action page.
      *
-     * @param ModuleInterface $activeModule
+     * @param ActionModuleInterface $activeModule
      * @param Request         $request
      * @return string
      */
-	private function renderModule(ModuleInterface $activeModule, Request $request)
+	private function renderModule(ActionModuleInterface $activeModule, Request $request)
 	{
         $app     = $this->app;
         $project = $app->getProjectInfo();

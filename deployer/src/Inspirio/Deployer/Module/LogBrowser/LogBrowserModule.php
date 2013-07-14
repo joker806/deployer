@@ -1,12 +1,12 @@
 <?php
 namespace Inspirio\Deployer\Module\LogBrowser;
 
-use Inspirio\Deployer\Module\Module;
+use Inspirio\Deployer\Module\ActionModuleBase;
 
-class LogBrowserModule extends Module
+class LogBrowserModule extends ActionModuleBase
 {
     const SERVER_LOG_PATH = '../statistics/logs';
-    const APPLICATION_LOG_PATH = ''
+    const APPLICATION_LOG_PATH = '';
 
     /**
      * {@inheritdoc}

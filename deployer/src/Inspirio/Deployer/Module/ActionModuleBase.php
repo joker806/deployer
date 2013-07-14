@@ -1,10 +1,8 @@
 <?php
 namespace Inspirio\Deployer\Module;
 
-use Inspirio\Deployer\CommandConfigurator;
-use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Config\ConfigAware;
-use Inspirio\Deployer\FeatureDetector;
+use Inspirio\Deployer\ModuleBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Process\Process;
 
@@ -13,28 +11,8 @@ use Symfony\Component\Process\Process;
  *
  * @author Josef Martinec <josef.martinec@inspirio.cz>
  */
-abstract class Module implements ModuleInterface, ConfigAware
+abstract class ActionModuleBase extends ModuleBase implements ActionModuleInterface, ConfigAware
 {
-	/**
-	 * @var string
-	 */
-	protected $projectDir;
-
-    /**
-     * @var Config
-     */
-    protected $config;
-
-	/**
-	 * @var CommandConfigurator
-	 */
-	private $commandConfigurator = null;
-
-	/**
-	 * @var FeatureDetector
-	 */
-	private $featureDetector = null;
-
 	/**
 	 * @var \ReflectionObject
 	 */
@@ -44,22 +22,6 @@ abstract class Module implements ModuleInterface, ConfigAware
 	 * @var string
 	 */
 	private $name = null;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setProjectDir($projectDir)
-	{
-		$this->projectDir = $projectDir;
-	}
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setConfig(Config $config)
-    {
-        $this->config = $config;
-    }
 
 	/**
 	 * {@inheritdoc}
@@ -133,7 +95,7 @@ abstract class Module implements ModuleInterface, ConfigAware
             $sectionContent[$name] = $this->renderTemplate($name, $sectionData);
         }
 
-        return $this->doRenderTemplate(__DIR__ .'/baseTemplate.html.php', array(
+        return parent::renderTemplate('moduleBase.html.php', array(
             'sections'       => $sections,
             'sectionContent' => $sectionContent,
         ));
@@ -145,62 +107,6 @@ abstract class Module implements ModuleInterface, ConfigAware
      * @return array
      */
     abstract protected function getSections();
-
-    /**
-	 * Returns command-configurator instance.
-	 *
-	 * @return CommandConfigurator
-	 */
-	protected function getCommandConfigurator()
-	{
-		if (!$this->commandConfigurator) {
-			$this->commandConfigurator = new CommandConfigurator($this->projectDir, $this->config);
-		}
-
-		return $this->commandConfigurator;
-	}
-
-	/**
-	 * Returns project feature detector.
-	 *
-	 * @return FeatureDetector
-	 */
-	protected function getFeatureDetector()
-	{
-		if (!$this->featureDetector) {
-			$this->featureDetector = new FeatureDetector($this->projectDir);
-		}
-
-		return $this->featureDetector;
-	}
-
-	/**
-	 * Runs commands in bulk.
-	 *
-	 * @param array $steps
-	 * @return bool
-	 */
-	protected function runBulkCommand(array $steps)
-	{
-		foreach ($steps as $step) {
-			if (!call_user_func_array(array($step[0], $step[1]), isset($step[2]) ? $step[2] : array())) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-    /**
-     * Finds path to project file if file exists.
-     *
-     * @param string $file
-     * @return string|null
-     */
-    protected function findFile($file)
-    {
-        return realpath($this->projectDir .'/'. $file) ?: null;
-    }
 
 	/**
 	 * Renders the action template.
@@ -216,27 +122,9 @@ abstract class Module implements ModuleInterface, ConfigAware
 		$dirName      = dirname($this->getReflection()->getFileName());
 		$templateFile = "{$dirName}/view/{$templateName}.html.php";
 
-		$data['action']     = $this;
 		$data['currentUrl'] = '?module='. $this->getName();
-        $data['appDir'] = $this->projectDir;
 
-		return $this->doRenderTemplate($templateFile, $data);
-	}
-
-	/**
-	 * Does the real template rendering.
-	 *
-	 * @param string $templateFile
-	 * @param array  $data
-	 * @return string
-	 */
-	private function doRenderTemplate($templateFile, array $data)
-	{
-		extract($data);
-
-		ob_start();
-		include $templateFile;
-		return ob_get_clean();
+		return parent::renderTemplate($templateFile, $data);
 	}
 
 	/**

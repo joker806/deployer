@@ -1,11 +1,10 @@
 <?php
 namespace Inspirio\Deployer\Module\Maintenance;
 
-use Inspirio\Deployer\Module\Module;
+use Inspirio\Deployer\Module\ActionModuleBase;
 use Inspirio\Deployer\Command\ProcessCommand;
-use Inspirio\Deployer\Command\SubversionCommand;
 
-class MaintenanceModule extends Module
+class MaintenanceModule extends ActionModuleBase
 {
 	/**
 	 * {@inheritdoc}

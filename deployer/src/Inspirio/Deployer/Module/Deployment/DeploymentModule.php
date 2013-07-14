@@ -1,12 +1,12 @@
 <?php
 namespace Inspirio\Deployer\Module\Deployment;
 
-use Inspirio\Deployer\Module\Module;
+use Inspirio\Deployer\Module\ActionModuleBase;
 use Inspirio\Deployer\Command\ComposerCommand;
 use Inspirio\Deployer\Command\SubversionCommand;
 use Inspirio\Deployer\Command\SymfonyCommand;
 
-class DeploymentModule extends Module
+class DeploymentModule extends ActionModuleBase
 {
     /**
      * {@inheritdoc}
