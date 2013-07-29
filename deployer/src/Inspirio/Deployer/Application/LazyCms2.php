@@ -28,9 +28,7 @@ class LazyCms2 implements ApplicationInterface {
     }
 
     /**
-     * Returns project name and version,
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getProjectInfo() {
         $info = array(

@@ -1,23 +1,10 @@
 <?php
 
-use Inspirio\Deployer\Handler\CliHandler;
+use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\RequestHandler;
+use Inspirio\Deployer\View\View;
 
 require 'vendor/autoload.php';
-
-$modules = array(
-    new \Inspirio\Deployer\Module\Info\InfoModule(),
-    new \Inspirio\Deployer\Module\Deployment\DeploymentModule(),
-    new \Inspirio\Deployer\Module\Configuration\ConfigurationModule(),
-    new \Inspirio\Deployer\Module\Maintenance\MaintenanceModule(),
-    new \Inspirio\Deployer\Module\Database\DatabaseModule(),
-);
-
-$security = array(
-    new \Inspirio\Deployer\Security\IpFilterSecurity(),
-    new \Inspirio\Deployer\Security\HttpsSecurity(),
-    new \Inspirio\Deployer\Security\StaticPassPhraseSecurity(),
-);
 
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
@@ -39,7 +26,22 @@ if (substr($appDir, 0, 7) === 'phar://') {
     }
 }
 
-$app = new \Inspirio\Deployer\Application\LazyCms2($appDir);
-$controller = new RequestHandler(__DIR__, $app, $modules, $security);
+$app = new \Inspirio\Deployer\Application\LazyCms3($appDir);
+
+$app->addSecurity(new \Inspirio\Deployer\Security\IpFilterSecurity())
+    ->addSecurity(new \Inspirio\Deployer\Security\HttpsSecurity())
+    ->addSecurity(new \Inspirio\Deployer\Security\StaticPassPhraseSecurity())
+;
+
+$app->addModule(new \Inspirio\Deployer\Module\Info\InfoModule())
+    ->addModule(new \Inspirio\Deployer\Module\Deployment\DeploymentModule())
+    ->addModule(new \Inspirio\Deployer\Module\Configuration\ConfigurationModule())
+    ->addModule(new \Inspirio\Deployer\Module\Maintenance\MaintenanceModule())
+    ->addModule(new \Inspirio\Deployer\Module\Database\DatabaseModule())
+;
+
+$config     = new Config('deployer.yml');
+$view       = new View(__DIR__ .'/view');
+$controller = new RequestHandler($config, $view, $app);
 
 echo $controller->dispatch();

@@ -2,7 +2,7 @@
 namespace Inspirio\Deployer;
 
 
-class Project
+class Project implements ProjectInfoInterface
 {
 	/**
 	 * @var array
@@ -16,7 +16,7 @@ class Project
 	 */
 	public function __construct($descriptorFile)
 	{
-		$this->description = json_decode(file_get_contents($descriptorFile), true);
+		$this->description = array();// json_decode(file_get_contents($descriptorFile), true);
 	}
 
 	/**

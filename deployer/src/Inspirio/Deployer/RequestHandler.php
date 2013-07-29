@@ -7,6 +7,7 @@ use Inspirio\Deployer\Config\ConfigAware;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
 use Inspirio\Deployer\Security\SecurityInterface;
+use Inspirio\Deployer\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -19,27 +20,20 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class RequestHandler
 {
-    const CONFIG_FILE = 'deployer.yml';
-
-    /**
-     * @var string
-     */
-    private $deployerDir;
-
-    /**
-     * @var ApplicationInterface
-     */
-    private $app;
-
     /**
      * @var Config
      */
     private $config;
 
     /**
-     * @var SecurityInterface[]
+     * @var View
      */
-    private $security;
+    private $view;
+
+    /**
+     * @var ApplicationInterface
+     */
+    private $app;
 
     /**
      * @var ActionModuleInterface[]
@@ -49,38 +43,16 @@ class RequestHandler
     /**
      * Constructor.
      *
-     * @param string               $deployerDir
+     * @param Config               $config
+     * @param View                 $view
      * @param ApplicationInterface $app
-     * @param ActionModuleInterface[]    $modules
-     * @param SecurityInterface[]  $security
      */
-    public function __construct($deployerDir, ApplicationInterface $app, array $modules, array $security = array())
+    public function __construct(Config $config, View $view, ApplicationInterface $app)
     {
-        $this->deployerDir = $deployerDir;
-        $this->app         = $app;
-        $this->config      = new Config(self::CONFIG_FILE);
-        $this->security    = $security;
-        $this->modules     = array();
-
-        foreach ($modules as $module) {
-            $this->modules[$module->getName()] = $module;
-            $module->setProjectDir($this->app->getRootPath());
-
-            if ($module instanceof ConfigAware) {
-                $module->setConfig($this->config);
-            }
-        }
-    }
-
-    /**
-     * Return real file-path (when file exists in project).
-     *
-     * @param string $fileName
-     * @return string|null
-     */
-    public function findFile($fileName)
-    {
-        return realpath($this->app->getRootPath() .'/'. $fileName) ?: null;
+        $this->config  = $config;
+        $this->view    = $view;
+        $this->app     = $app;
+        $this->modules = array();
     }
 
     /**
@@ -142,7 +114,6 @@ class RequestHandler
         $request->setSession($session);
 
         $response = $this->handleRequest($request);
-
         $response->send();
 	}
 
@@ -163,6 +134,8 @@ class RequestHandler
 
         $isPost = $request->isMethod('post');
         $isAjax = $request->isXmlHttpRequest();
+
+        $this->initModules();
 
         $moduleName = $request->query->get('module');
         $module     = $this->findModule($moduleName);
@@ -201,7 +174,10 @@ class RequestHandler
 //            }
         }
 
-        $content = $this->renderModule($module, $request);
+        $this->view['app']    = $this->app;
+        $this->view['module'] = $module;
+
+        $content = $module->render($request, $this->view);
 
         return new Response($content);
     }
@@ -214,7 +190,7 @@ class RequestHandler
      */
     private function checkSecurity(Request $request)
     {
-        foreach ($this->security as $security) {
+        foreach ($this->app->getSecurity() as $security) {
             if ($security instanceof ConfigAware) {
                 $security->setConfig($this->config);
             }
@@ -231,6 +207,20 @@ class RequestHandler
         }
 
         return null;
+    }
+
+    /**
+     * Initializes action modules.
+     *
+     */
+    private function initModules()
+    {
+        foreach ($this->app->getModules() as $module) {
+            $module->setApp($this->app);
+            $module->setConfig($this->config);
+
+            $this->modules[$module->getName()] = $module;
+        }
     }
 
     /**
@@ -261,22 +251,4 @@ class RequestHandler
 
         return $module;
     }
-
-    /**
-     * Renders the action page.
-     *
-     * @param ActionModuleInterface $activeModule
-     * @param Request         $request
-     * @return string
-     */
-	private function renderModule(ActionModuleInterface $activeModule, Request $request)
-	{
-        $app     = $this->app;
-        $project = $app->getProjectInfo();
-        $modules = $this->modules;
-
-		ob_start();
-		require $this->deployerDir .'/view/index.html.php';
-		return ob_get_clean();
-	}
 }

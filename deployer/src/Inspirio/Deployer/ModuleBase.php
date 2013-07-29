@@ -1,20 +1,22 @@
 <?php
 namespace Inspirio\Deployer;
 
+use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\View\View;
 use Symfony\Component\HttpFoundation\Request;
 
-abstract class ModuleBase {
-
-    /**
-     * @var string
-     */
-    protected $projectDir;
-
+abstract class ModuleBase implements ModuleInterface
+{
     /**
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var ApplicationInterface
+     */
+    protected $app;
 
     /**
      * @var CommandConfigurator
@@ -29,14 +31,6 @@ abstract class ModuleBase {
     /**
      * {@inheritdoc}
      */
-    public function setProjectDir($projectDir)
-    {
-        $this->projectDir = $projectDir;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function setConfig(Config $config)
     {
         $this->config = $config;
@@ -45,7 +39,10 @@ abstract class ModuleBase {
     /**
      * {@inheritdoc}
      */
-    abstract public function render(Request $request);
+    public function setApp(ApplicationInterface $app)
+    {
+        $this->app = $app;
+    }
 
     /**
      * Returns command-configurator instance.
@@ -55,7 +52,7 @@ abstract class ModuleBase {
     protected function getCommandConfigurator()
     {
         if (!$this->commandConfigurator) {
-            $this->commandConfigurator = new CommandConfigurator($this->projectDir, $this->config);
+            $this->commandConfigurator = new CommandConfigurator($this->app->getRootPath(), $this->config);
         }
 
         return $this->commandConfigurator;
@@ -69,7 +66,7 @@ abstract class ModuleBase {
     protected function getFeatureDetector()
     {
         if (!$this->featureDetector) {
-            $this->featureDetector = new FeatureDetector($this->projectDir);
+            $this->featureDetector = new FeatureDetector($this->app->getRootPath());
         }
 
         return $this->featureDetector;
@@ -98,44 +95,8 @@ abstract class ModuleBase {
      * @param string $file
      * @return string|null
      */
-    protected function findFile($file)
+    protected function findAppFile($file)
     {
-        return realpath($this->projectDir .'/'. $file) ?: null;
-    }
-
-    /**
-     * Renders the action template.
-     *
-     * Template should be located in the action view directory.
-     *
-     * @param string $templateName
-     * @param array  $data
-     * @return string
-     */
-    protected function renderTemplate($templateName, array $data = array())
-    {
-        $templateFile = "{$dirName}/view/{$templateName}.html.php";
-
-        $data['action']     = $this;
-        $data['currentUrl'] = '?module='. $this->getName();
-        $data['appDir'] = $this->projectDir;
-
-        return $this->doRenderTemplate($templateFile, $data);
-    }
-
-    /**
-     * Does the real template rendering.
-     *
-     * @param string $templateFile
-     * @param array  $data
-     * @return string
-     */
-    private function doRenderTemplate($templateFile, array $data)
-    {
-        extract($data);
-
-        ob_start();
-        include $templateFile;
-        return ob_get_clean();
+        return realpath($this->app->getRootPath() .'/'. $file) ?: null;
     }
 }

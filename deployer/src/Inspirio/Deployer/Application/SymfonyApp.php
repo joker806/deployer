@@ -1,10 +1,13 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
+use Inspirio\Deployer\Bootstrap\StarterModuleInterface;
+use Inspirio\Deployer\Module\ActionModuleInterface;
+use Inspirio\Deployer\Security\SecurityInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class SymfonyApp implements ApplicationInterface {
-
+class SymfonyApp extends AbstractApplication
+{
 	const PARAMS_FILE = 'app/config/parameters.yml';
 
     /**
@@ -15,9 +18,45 @@ class SymfonyApp implements ApplicationInterface {
     /**
      * {@inheritdoc}
      */
-    public function __construct($appDir) {
+    public function __construct($appDir)
+    {
         $this->appDir = $appDir;
     }
+
+    /**
+     * Returns application security modules.
+     *
+     * @return SecurityInterface[]
+     */
+    public function getSecurity()
+    {
+        return array(
+            new \Inspirio\Deployer\Security\IpFilterSecurity(),
+            new \Inspirio\Deployer\Security\HttpsSecurity(),
+            new \Inspirio\Deployer\Security\StaticPassPhraseSecurity(),
+        );
+    }
+
+    /**
+     * Returns application starter modules.
+     *
+     * @return StarterModuleInterface[]
+     */
+    public function getStarters()
+    {
+        return array();
+    }
+
+    /**
+     * Returns project name and version,
+     *
+     * @return array
+     */
+    public function getProjectInfo()
+    {
+        // TODO: Implement getProjectInfo() method.
+    }
+
 
     /**
      * {@inheritdoc}

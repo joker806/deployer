@@ -3,6 +3,7 @@ namespace Inspirio\Deployer\Application;
 
 use Inspirio\Deployer\Bootstrap\StarterModuleInterface;
 use Inspirio\Deployer\Module\ActionModuleInterface;
+use Inspirio\Deployer\ProjectInfoInterface;
 use Inspirio\Deployer\Security\SecurityInterface;
 
 interface ApplicationInterface {
@@ -31,11 +32,11 @@ interface ApplicationInterface {
     public function getSecurity();
 
     /**
-     * Returns application started module.
+     * Returns application starter modules.
      *
      * @return StarterModuleInterface[]
      */
-    public function getStarted();
+    public function getStarters();
 
     /**
      * Returns application-registered modules.
@@ -47,7 +48,7 @@ interface ApplicationInterface {
     /**
      * Returns project name and version,
      *
-     * @return array
+     * @return ProjectInfoInterface
      */
     public function getProjectInfo();
 

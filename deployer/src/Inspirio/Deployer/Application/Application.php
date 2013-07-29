@@ -1,9 +1,8 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
-
-abstract class Application implements ApplicationInterface {
-
+abstract class Application implements ApplicationInterface
+{
     /**
      * @var string
      */
@@ -26,5 +25,4 @@ abstract class Application implements ApplicationInterface {
     public function getRootPath() {
         return $this->appDir;
     }
-
 }

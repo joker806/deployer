@@ -34,7 +34,7 @@ class DeploymentModule extends ActionModuleBase
      */
     protected function renderCheckout()
     {
-        if (file_exists($this->projectDir .'/.svn')) {
+        if ($this->findAppFile('.svn')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class DeploymentModule extends ActionModuleBase
      */
     protected function renderUpdate()
     {
-        if (!file_exists($this->projectDir .'/.svn')) {
+        if (!$this->findAppFile('.svn')) {
             return false;
         }
 

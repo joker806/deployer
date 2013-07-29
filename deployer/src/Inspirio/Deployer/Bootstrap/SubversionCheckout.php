@@ -2,6 +2,7 @@
 namespace Inspirio\Deployer\Bootstrap;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
+use Inspirio\Deployer\Config\Config;
 
 class SubversionCheckout implements StarterModuleInterface {
 
@@ -32,5 +33,10 @@ class SubversionCheckout implements StarterModuleInterface {
     public function bootstrapApp()
     {
 
+    }
+
+    public function setConfig(Config $config)
+    {
+        // TODO: Implement setConfig() method.
     }
 }

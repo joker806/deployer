@@ -31,7 +31,7 @@ class InfoModule extends ActionModuleBase
      */
     public function isEnabled()
     {
-        return (bool)$this->findFile('.svn');
+        return (bool)$this->findAppFile('.svn');
     }
 
     /**

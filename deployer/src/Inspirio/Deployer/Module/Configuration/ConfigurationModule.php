@@ -20,7 +20,7 @@ class ConfigurationModule extends ActionModuleBase
 	 */
 	public function isEnabled()
 	{
-		return file_exists($this->projectDir .'/app/config');
+		return (bool)$this->findAppFile('app/config');
 	}
 
     /**

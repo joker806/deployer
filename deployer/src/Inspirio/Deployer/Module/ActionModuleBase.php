@@ -3,6 +3,7 @@ namespace Inspirio\Deployer\Module;
 
 use Inspirio\Deployer\Config\ConfigAware;
 use Inspirio\Deployer\ModuleBase;
+use Inspirio\Deployer\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Process\Process;
 
@@ -62,7 +63,7 @@ abstract class ActionModuleBase extends ModuleBase implements ActionModuleInterf
     /**
      * {@inheritdoc}
      */
-    public function render(Request $request)
+    public function render(Request $request, View $view)
     {
         $sections = $this->getSections();
         $sectionContent = array();
@@ -92,10 +93,10 @@ abstract class ActionModuleBase extends ModuleBase implements ActionModuleInterf
                 $sectionData = array();
             }
 
-            $sectionContent[$name] = $this->renderTemplate($name, $sectionData);
+//            $sectionContent[$name] = $this->renderTemplate($name, $sectionData);
         }
 
-        return parent::renderTemplate('moduleBase.html.php', array(
+        return $view->render('module/layout.html.php', array(
             'sections'       => $sections,
             'sectionContent' => $sectionContent,
         ));
@@ -108,24 +109,6 @@ abstract class ActionModuleBase extends ModuleBase implements ActionModuleInterf
      */
     abstract protected function getSections();
 
-	/**
-	 * Renders the action template.
-	 *
-	 * Template should be located in the action view directory.
-	 *
-	 * @param string $templateName
-	 * @param array  $data
-	 * @return string
-	 */
-	protected function renderTemplate($templateName, array $data = array())
-	{
-		$dirName      = dirname($this->getReflection()->getFileName());
-		$templateFile = "{$dirName}/view/{$templateName}.html.php";
-
-		$data['currentUrl'] = '?module='. $this->getName();
-
-		return parent::renderTemplate($templateFile, $data);
-	}
 
 	/**
 	 * Returns object reflection.
