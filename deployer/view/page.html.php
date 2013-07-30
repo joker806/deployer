@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Project deployer - <?= $app->getProjectInfo()->getName() ?></title>
+	<title>Project deployer<?= $app->getProjectInfo()->getName() ? ' - '. $app->getProjectInfo()->getName() : '' ?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link href="public/css/bootstrap.min.css" rel="stylesheet">

@@ -152,9 +152,6 @@ class RequestHandler
             return $response;
         }
 
-        $isPost = $request->isMethod('post');
-        $isAjax = $request->isXmlHttpRequest();
-
         $moduleName    = $request->query->get('module', $this->app->getHomeModuleName());
         $requestModule = null;
 
@@ -172,43 +169,19 @@ class RequestHandler
             }
         }
 
+        /** @var $module ModuleInterface */
         $module = $request->attributes->get('module');
 
         if (!$module) {
             return new Response('404 Not Found', 404);
         }
 
-        if ($isPost) {
-            if ($isAjax) {
-                $action = $request->request->get('run', null);
-
-                if ($action === null) {
-                    throw new \LogicException("No action specified (missing 'run' argument)");
-                }
-
-                $args = $request->request->all();
-                unset($args['run']);
-
-                return $this->runAction($module, $action, $args);
-            }
-
-            throw new \Exception('Handling of non-ajax POST requests is not implemented yet');
-
-//            $params = $module->handlePost($_POST);
-//
-//            if (is_array($params)) {
-//                if (!array_key_exists('action', $params)) {
-//                    $params['action'] = $moduleName;
-//                }
-//
-//                header('HTTP/1.1 303 See Other');
-//                header('Location: ?'. http_build_query($params));
-//            }
+        if ($module instanceof ViewAware) {
+            $this->view['module'] = $module;
+            $module->setView($this->view);
         }
 
-        $this->view['module'] = $module;
-
-        $content = $module->render($request, $this->view);
+        $content = $module->handleRequest($request);
 
         return new Response($content);
     }

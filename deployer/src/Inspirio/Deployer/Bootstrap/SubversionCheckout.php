@@ -9,22 +9,19 @@ class SubversionCheckout extends AbstractStarterModule
     /**
      * {@inheritdoc}
      */
-    public function isReady()
+    public function isStarted()
     {
-        return file_exists($this->app->getRootPath() .'/.svn');
+        return (bool)$this->app->findFile('.svn');
     }
 
     /**
      * {@inheritdoc}
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return null|string|\Symfony\Component\HttpFoundation\Response
      */
-    public function handleRequest(Request $request)
+    public function render(Request $request)
     {
-        if ($this->app->findFile('.svn')) {
-            return null;
-        }
-
-        return $this->createTemplateResponse('bootstrap/subversionCheckout.html.php');
+        return array(
+            'repoUrl'  => '',
+            'revision' => 'HEAD',
+        );
     }
 }
