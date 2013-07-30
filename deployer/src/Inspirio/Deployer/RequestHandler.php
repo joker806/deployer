@@ -145,18 +145,34 @@ class RequestHandler
             return $response;
         }
 
+        if ($response = $this->startupApp($request)) {
+            return $response;
+        }
+
         $isPost = $request->isMethod('post');
         $isAjax = $request->isXmlHttpRequest();
 
-        $this->initModules();
+        $moduleName    = $request->query->get('module', $this->app->getHomeModuleName());
+        $requestModule = null;
 
-        $moduleName = $request->query->get('module');
-        $module     = $this->findModule($moduleName);
+        foreach($this->app->getModules() as $module) {
+            if ($module instanceof ConfigAware) {
+                $module->setConfig($this->config);
+            }
+
+            if (!$module->isEnabled()) {
+                continue;
+            }
+
+            if ($module->getName() == $moduleName) {
+                $request->attributes->set('module', $module);
+            }
+        }
+
+        $module = $request->attributes->get('module');
 
         if (!$module) {
-            return new Response('404 Not Found', 404, array(
-                'Location' => '?'
-            ));
+            return new Response('404 Not Found', 404);
         }
 
         if ($isPost) {
@@ -203,7 +219,7 @@ class RequestHandler
      */
     private function checkSecurity(Request $request)
     {
-        foreach ($this->app->getSecurity() as $security) {
+        foreach ($this->security as $security) {
             if ($security instanceof ConfigAware) {
                 $security->setConfig($this->config);
             }
@@ -223,45 +239,25 @@ class RequestHandler
     }
 
     /**
-     * Initializes action modules.
+     * Checks if application is started-up and shows start-up screen if not.
      *
+     * @param Request $request
+     * @return null|Response
      */
-    private function initModules()
+    private function startupApp(Request $request)
     {
-        foreach ($this->app->getModules() as $module) {
-            $module->setApp($this->app);
-            $module->setConfig($this->config);
+        foreach ($this->app->getStarters() as $starter) {
+            if ($starter instanceof ConfigAware) {
+                $starter->setConfig($this->config);
+            }
 
-            $this->modules[$module->getName()] = $module;
-        }
-    }
+            $response = $starter->startupApp($request);
 
-    /**
-     * Returns module instance.
-     *
-     * @param string $moduleName
-     * @return ActionModuleInterface|null
-     */
-    private function findModule($moduleName)
-    {
-        if ($moduleName && isset($this->modules[$moduleName])) {
-            $module = $this->modules[$moduleName];
-
-        } else {
-            $module = reset($this->modules);
-        }
-
-        if (!$module->isEnabled()) {
-            $module = null;
-
-            foreach ($this->modules as $try) {
-                if ($try->isEnabled()) {
-                    $module = $try;
-                    break;
-                }
+            if ($response instanceof Response) {
+                return $response;
             }
         }
 
-        return $module;
+        return null;
     }
 }

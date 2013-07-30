@@ -11,11 +11,11 @@ interface ApplicationInterface {
     /**
      * Constructor
      *
-     * @param $appDir
+     * @param $rootPath
      *
-     * @throws  \RuntimeException
+     * @throws \RuntimeException
      */
-    public function __construct($appDir);
+    public function __construct($rootPath);
 
     /**
      * Returns path to application root dir.
@@ -23,13 +23,6 @@ interface ApplicationInterface {
      * @return string
      */
     public function getRootPath();
-
-    /**
-     * Returns application security modules.
-     *
-     * @return SecurityInterface[]
-     */
-    public function getSecurity();
 
     /**
      * Returns application starter modules.
@@ -44,6 +37,13 @@ interface ApplicationInterface {
      * @return ActionModuleInterface[]
      */
     public function getModules();
+
+    /**
+     * Returns name of home module.
+     *
+     * @return string
+     */
+    public function getHomeModuleName();
 
     /**
      * Returns project name and version,

@@ -30,7 +30,7 @@ class SubversionCheckout implements StarterModuleInterface {
     /**
      * {@inheritdoc}
      */
-    public function bootstrapApp()
+    public function startupApp()
     {
 
     }

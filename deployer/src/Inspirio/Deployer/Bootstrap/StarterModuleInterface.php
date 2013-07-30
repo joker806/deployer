@@ -20,5 +20,5 @@ interface StarterModuleInterface extends ModuleInterface
     /**
      * Bootstraps the application.
      */
-    public function bootstrapApp();
+    public function startupApp();
 }

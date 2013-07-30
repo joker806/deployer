@@ -12,11 +12,11 @@ class LazyCms2 implements ApplicationInterface {
     /**
      * {@inheritdoc}
      */
-    public function __construct($appDir) {
-        $this->appDir = realpath($appDir);
+    public function __construct($rootPath) {
+        $this->appDir = realpath($rootPath);
 
         if ($this->appDir === false) {
-            throw new \RuntimeException("Application directory '{$appDir}' does not exist.");
+            throw new \RuntimeException("Application directory '{$rootPath}' does not exist.");
         }
     }
 

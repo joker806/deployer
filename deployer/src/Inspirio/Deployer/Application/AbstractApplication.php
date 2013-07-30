@@ -1,13 +1,17 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
-
 use Inspirio\Deployer\Bootstrap\StarterModuleInterface;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Security\SecurityInterface;
 
 abstract class AbstractApplication implements ApplicationInterface
 {
+    /**
+     * @var string
+     */
+    private $rootPath;
+
     /**
      * @var StarterModuleInterface[]
      */
@@ -19,6 +23,21 @@ abstract class AbstractApplication implements ApplicationInterface
     private $modules;
 
     /**
+     * {@inheritdoc}
+     */
+    public function __construct($rootPath)
+    {
+        $this->rootPath = $rootPath;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRootPath() {
+        return $this->rootPath;
+    }
+
+    /**
      * Registers starter module.
      *
      * @param StarterModuleInterface $starter
@@ -26,6 +45,8 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function addStarter(StarterModuleInterface $starter)
     {
+        $starter->setApp($this);
+
         $this->starters[] = $starter;
         return $this;
     }
@@ -48,6 +69,8 @@ abstract class AbstractApplication implements ApplicationInterface
      */
     public function addModule(ActionModuleInterface $module)
     {
+        $module->setApp($this);
+
         $this->modules[] = $module;
         return $this;
     }
@@ -60,5 +83,28 @@ abstract class AbstractApplication implements ApplicationInterface
     public function getModules()
     {
         return $this->modules;
+    }
+
+    /**
+     * Finds module instance by its name.
+     *
+     * @param string $moduleName
+     * @return ActionModuleInterface|null
+     */
+    private function findModule($moduleName)
+    {
+        foreach ($this->modules as $module) {
+            if ($module->getName() != $moduleName) {
+                continue;
+            }
+
+            if (!$module->isEnabled()) {
+                continue;
+            }
+
+            return $module;
+        }
+
+        return null;
     }
 }

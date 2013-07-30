@@ -6,36 +6,9 @@ use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Security\SecurityInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class SymfonyApp extends AbstractApplication
+abstract class SymfonyApp extends AbstractApplication
 {
 	const PARAMS_FILE = 'app/config/parameters.yml';
-
-    /**
-     * @var string
-     */
-    private $appDir;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($appDir)
-    {
-        $this->appDir = $appDir;
-    }
-
-    /**
-     * Returns application security modules.
-     *
-     * @return SecurityInterface[]
-     */
-    public function getSecurity()
-    {
-        return array(
-            new \Inspirio\Deployer\Security\IpFilterSecurity(),
-            new \Inspirio\Deployer\Security\HttpsSecurity(),
-            new \Inspirio\Deployer\Security\StaticPassPhraseSecurity(),
-        );
-    }
 
     /**
      * Returns application starter modules.
@@ -55,14 +28,6 @@ class SymfonyApp extends AbstractApplication
     public function getProjectInfo()
     {
         // TODO: Implement getProjectInfo() method.
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRootPath() {
-        return $this->appDir;
     }
 
     /**
@@ -99,7 +64,7 @@ class SymfonyApp extends AbstractApplication
 	 */
 	private function loadParams($paramsFile = self::PARAMS_FILE)
 	{
-		$params = Yaml::parse(file_get_contents($this->appDir .'/'. $paramsFile));
+		$params = Yaml::parse(file_get_contents($this->getRootPath() .'/'. $paramsFile));
 		return $params['parameters'];
 	}
 }

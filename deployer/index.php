@@ -28,14 +28,6 @@ if (substr($appDir, 0, 7) === 'phar://') {
 
 $app = new \Inspirio\Deployer\Application\LazyCms3($appDir);
 
-$app
-    ->addModule(new \Inspirio\Deployer\Module\Info\InfoModule())
-    ->addModule(new \Inspirio\Deployer\Module\Deployment\DeploymentModule())
-    ->addModule(new \Inspirio\Deployer\Module\Configuration\ConfigurationModule())
-    ->addModule(new \Inspirio\Deployer\Module\Maintenance\MaintenanceModule())
-    ->addModule(new \Inspirio\Deployer\Module\Database\DatabaseModule())
-;
-
 $config   = new Config('deployer.yml');
 $view     = new View(__DIR__ .'/view');
 $deployer = new RequestHandler($config, $view, $app);
