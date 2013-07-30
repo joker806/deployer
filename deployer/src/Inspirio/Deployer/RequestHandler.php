@@ -36,9 +36,9 @@ class RequestHandler
     private $app;
 
     /**
-     * @var ActionModuleInterface[]
+     * @var SecurityInterface[]
      */
-    private $modules;
+    private $security;
 
     /**
      * Constructor.
@@ -49,11 +49,24 @@ class RequestHandler
      */
     public function __construct(Config $config, View $view, ApplicationInterface $app)
     {
-        $this->config  = $config;
-        $this->view    = $view;
-        $this->app     = $app;
-        $this->modules = array();
+        $this->config   = $config;
+        $this->view     = $view;
+        $this->app      = $app;
+        $this->security = array();
     }
+
+    /**
+     * Registers security module.
+     *
+     * @param SecurityInterface $security
+     * @return $this
+     */
+    public function addSecurity(SecurityInterface $security)
+    {
+        $this->security[] = $security;
+        return $this;
+    }
+
 
     /**
      * Runs the action.

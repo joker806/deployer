@@ -9,11 +9,6 @@ use Inspirio\Deployer\Security\SecurityInterface;
 abstract class AbstractApplication implements ApplicationInterface
 {
     /**
-     * @var SecurityInterface[]
-     */
-    private $security;
-
-    /**
      * @var StarterModuleInterface[]
      */
     private $starters;
@@ -22,28 +17,6 @@ abstract class AbstractApplication implements ApplicationInterface
      * @var ActionModuleInterface[]
      */
     private $modules;
-
-    /**
-     * Registers security module.
-     *
-     * @param SecurityInterface $security
-     * @return $this
-     */
-    public function addSecurity(SecurityInterface $security)
-    {
-        $this->security[] = $security;
-        return $this;
-    }
-
-    /**
-     * Returns registered security modules.
-     *
-     * @return SecurityInterface
-     */
-    public function getSecurity()
-    {
-        return $this->security;
-    }
 
     /**
      * Registers starter module.
