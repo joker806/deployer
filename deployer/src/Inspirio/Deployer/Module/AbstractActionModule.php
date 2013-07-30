@@ -2,7 +2,7 @@
 namespace Inspirio\Deployer\Module;
 
 use Inspirio\Deployer\Config\ConfigAware;
-use Inspirio\Deployer\ModuleBase;
+use Inspirio\Deployer\AbstractModule;
 use Inspirio\Deployer\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Process\Process;
@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
  *
  * @author Josef Martinec <josef.martinec@inspirio.cz>
  */
-abstract class ActionModuleBase extends ModuleBase implements ActionModuleInterface, ConfigAware
+abstract class AbstractActionModule extends AbstractModule implements ActionModuleInterface, ConfigAware
 {
 	/**
 	 * @var \ReflectionObject
@@ -62,8 +62,10 @@ abstract class ActionModuleBase extends ModuleBase implements ActionModuleInterf
 
     /**
      * {@inheritdoc}
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return string
      */
-    public function render(Request $request, View $view)
+    public function handleRequest(Request $request)
     {
         $sections = $this->getSections();
         $sectionContent = array();

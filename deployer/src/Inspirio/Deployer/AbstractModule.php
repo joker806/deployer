@@ -4,9 +4,11 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\View\View;
+use Inspirio\Deployer\View\ViewAware;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-abstract class ModuleBase implements ModuleInterface
+abstract class AbstractModule implements ModuleInterface, ViewAware
 {
     /**
      * @var Config
@@ -17,6 +19,11 @@ abstract class ModuleBase implements ModuleInterface
      * @var ApplicationInterface
      */
     protected $app;
+
+    /**
+     * @var View
+     */
+    protected $view;
 
     /**
      * @var CommandConfigurator
@@ -45,6 +52,14 @@ abstract class ModuleBase implements ModuleInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function setView(View $view)
+    {
+        $this->view = $view;
+    }
+
+    /**
      * Returns command-configurator instance.
      *
      * @return CommandConfigurator
@@ -70,6 +85,20 @@ abstract class ModuleBase implements ModuleInterface
         }
 
         return $this->featureDetector;
+    }
+
+    /**
+     * Creates a response containing a rendered template.
+     *
+     * @param $template
+     * @param array $data
+     * @return Response
+     */
+    protected function createTemplateResponse($template, array $data = array())
+    {
+        $content = $this->view->render($template, $data);
+
+        return new Response($content);
     }
 
     /**

@@ -8,6 +8,7 @@ use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
 use Inspirio\Deployer\Security\SecurityInterface;
 use Inspirio\Deployer\View\View;
+use Inspirio\Deployer\View\ViewAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -252,7 +253,11 @@ class RequestHandler
                 $starter->setConfig($this->config);
             }
 
-            $response = $starter->render($request, $this->view);
+            if ($starter instanceof ViewAware) {
+                $starter->setView($this->view);
+            }
+
+            $response = $starter->handleRequest($request);
 
             if ($response instanceof Response) {
                 return $response;

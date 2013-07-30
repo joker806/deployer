@@ -1,10 +1,10 @@
 <?php
 namespace Inspirio\Deployer\Module\Database;
 
-use Inspirio\Deployer\Module\ActionModuleBase;
+use Inspirio\Deployer\Module\AbstractActionModule;
 use Symfony\Component\Yaml\Yaml;
 
-class DatabaseModule extends ActionModuleBase
+class DatabaseModule extends AbstractActionModule
 {
 	/**
 	 * {@inheritdoc}

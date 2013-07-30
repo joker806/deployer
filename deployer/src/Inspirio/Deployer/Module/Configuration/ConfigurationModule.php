@@ -1,11 +1,11 @@
 <?php
 namespace Inspirio\Deployer\Module\Configuration;
 
-use Inspirio\Deployer\Module\ActionModuleBase;
+use Inspirio\Deployer\Module\AbstractActionModule;
 use Inspirio\Deployer\Command\SymfonyCommand;
 use Symfony\Component\Yaml\Yaml;
 
-class ConfigurationModule extends ActionModuleBase
+class ConfigurationModule extends AbstractActionModule
 {
 	/**
 	 * {@inheritdoc}

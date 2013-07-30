@@ -1,11 +1,10 @@
 <?php
 namespace Inspirio\Deployer\Bootstrap;
 
-use Inspirio\Deployer\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class SubversionCheckout extends AbstractStarter
+class SubversionCheckout extends AbstractStarterModule
 {
     /**
      * {@inheritdoc}
@@ -17,13 +16,15 @@ class SubversionCheckout extends AbstractStarter
 
     /**
      * {@inheritdoc}
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return null|string|\Symfony\Component\HttpFoundation\Response
      */
-    public function render(Request $request, View $view)
+    public function handleRequest(Request $request)
     {
         if ($this->app->findFile('.svn')) {
             return null;
         }
 
-        return new Response('aa');
+        return $this->createTemplateResponse('bootstrap/subversionCheckout.html.php');
     }
 }

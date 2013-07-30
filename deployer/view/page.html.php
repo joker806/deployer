@@ -11,7 +11,7 @@
 	<link rel="shortcut icon" href="public/favicon.ico">
 </head>
 
-<body>
+<body class="<?= isset($bodyClass) ? $bodyClass : '' ?>">
 	<?= $subContent ?>
 
 	<script src="public/js/jquery.min.js"></script>

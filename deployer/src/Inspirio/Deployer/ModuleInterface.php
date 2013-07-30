@@ -26,8 +26,7 @@ interface ModuleInterface
      * Renders the action user interface.
      *
      * @param Request $request
-     * @param View $view
      * @return string
      */
-    public function render(Request $request, View $view);
+    public function handleRequest(Request $request);
 }

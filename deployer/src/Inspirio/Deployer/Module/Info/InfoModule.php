@@ -1,10 +1,10 @@
 <?php
 namespace Inspirio\Deployer\Module\Info;
 
-use Inspirio\Deployer\Module\ActionModuleBase;
+use Inspirio\Deployer\Module\AbstractActionModule;
 use Inspirio\Deployer\Command\SubversionCommand;
 
-class InfoModule extends ActionModuleBase
+class InfoModule extends AbstractActionModule
 {
 	/**
 	 * {@inheritdoc}
