@@ -9,11 +9,16 @@ use Inspirio\Deployer\Security\SecurityInterface;
 
 class LazyCms3 extends SymfonyApp
 {
+    /**
+     * {@inheritdoc}
+     */
     public function __construct($rootPath)
     {
         parent::__construct($rootPath);
 
         $this
+            ->addStarter(new \Inspirio\Deployer\Bootstrap\SubversionCheckout())
+
             ->addModule(new \Inspirio\Deployer\Module\Info\InfoModule())
             ->addModule(new \Inspirio\Deployer\Module\Deployment\DeploymentModule())
             ->addModule(new \Inspirio\Deployer\Module\Configuration\ConfigurationModule())

@@ -88,15 +88,4 @@ abstract class ModuleBase implements ModuleInterface
 
         return true;
     }
-
-    /**
-     * Finds path to project file if file exists.
-     *
-     * @param string $file
-     * @return string|null
-     */
-    protected function findAppFile($file)
-    {
-        return realpath($this->app->getRootPath() .'/'. $file) ?: null;
-    }
 }

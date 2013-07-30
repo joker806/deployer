@@ -38,6 +38,14 @@ abstract class AbstractApplication implements ApplicationInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function findFile($file)
+    {
+        return realpath($this->getRootPath() . '/' . $file) ? : null;
+    }
+
+    /**
      * Registers starter module.
      *
      * @param StarterModuleInterface $starter

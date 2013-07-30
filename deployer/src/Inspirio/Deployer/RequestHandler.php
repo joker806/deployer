@@ -141,6 +141,8 @@ class RequestHandler
      */
     private function handleRequest(Request $request)
     {
+        $this->view['app'] = $this->app;
+
         if ($response = $this->checkSecurity($request)) {
             return $response;
         }
@@ -203,7 +205,6 @@ class RequestHandler
 //            }
         }
 
-        $this->view['app']    = $this->app;
         $this->view['module'] = $module;
 
         $content = $module->render($request, $this->view);
@@ -251,7 +252,7 @@ class RequestHandler
                 $starter->setConfig($this->config);
             }
 
-            $response = $starter->startupApp($request);
+            $response = $starter->render($request, $this->view);
 
             if ($response instanceof Response) {
                 return $response;

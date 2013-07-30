@@ -1,24 +1,12 @@
 <?php
 namespace Inspirio\Deployer\Bootstrap;
 
-use Inspirio\Deployer\Application\ApplicationInterface;
-use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\View\View;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class SubversionCheckout implements StarterModuleInterface {
-
-    /**
-     * @var ApplicationInterface
-     */
-    private $app;
-
-    /**
-     * {@inheritdoc}
-     */
-    function __construct(ApplicationInterface $app)
-    {
-        $this->app = $app;
-    }
-
+class SubversionCheckout extends AbstractStarter
+{
     /**
      * {@inheritdoc}
      */
@@ -30,13 +18,12 @@ class SubversionCheckout implements StarterModuleInterface {
     /**
      * {@inheritdoc}
      */
-    public function startupApp()
+    public function render(Request $request, View $view)
     {
+        if ($this->app->findFile('.svn')) {
+            return null;
+        }
 
-    }
-
-    public function setConfig(Config $config)
-    {
-        // TODO: Implement setConfig() method.
+        return new Response('aa');
     }
 }

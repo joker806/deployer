@@ -1,7 +1,9 @@
 <?php
 namespace Inspirio\Deployer\Bootstrap;
 
+use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\ModuleInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Project starter interface.
@@ -11,14 +13,9 @@ use Inspirio\Deployer\ModuleInterface;
 interface StarterModuleInterface extends ModuleInterface
 {
     /**
-     * Checks if project is bootstrapped.
+     * Sets application to startup.
      *
-     * @return bool
+     * @param ApplicationInterface $app
      */
-    public function isReady();
-
-    /**
-     * Bootstraps the application.
-     */
-    public function startupApp();
+    public function setApp(ApplicationInterface $app);
 }

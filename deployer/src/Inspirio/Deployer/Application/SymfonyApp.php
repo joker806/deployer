@@ -11,16 +11,6 @@ abstract class SymfonyApp extends AbstractApplication
 	const PARAMS_FILE = 'app/config/parameters.yml';
 
     /**
-     * Returns application starter modules.
-     *
-     * @return StarterModuleInterface[]
-     */
-    public function getStarters()
-    {
-        return array();
-    }
-
-    /**
      * Returns project name and version,
      *
      * @return array

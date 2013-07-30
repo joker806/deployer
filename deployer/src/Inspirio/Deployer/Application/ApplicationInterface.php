@@ -25,6 +25,14 @@ interface ApplicationInterface {
     public function getRootPath();
 
     /**
+     * Finds path to application file (if file exists).
+     *
+     * @param string $file
+     * @return string|null
+     */
+    public function findFile($file);
+
+    /**
      * Returns application starter modules.
      *
      * @return StarterModuleInterface[]

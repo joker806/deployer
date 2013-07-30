@@ -117,4 +117,9 @@ class LazyCms2 implements ApplicationInterface {
 
         return $config;
     }
+
+    public function findFile($file)
+    {
+        // TODO: Implement findAppFile() method.
+    }
 }
