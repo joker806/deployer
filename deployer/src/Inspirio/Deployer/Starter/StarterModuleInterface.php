@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Bootstrap;
+namespace Inspirio\Deployer\Starter;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\ModuleInterface;

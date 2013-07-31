@@ -1,7 +1,7 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
-use Inspirio\Deployer\Bootstrap\StarterModuleInterface;
+use Inspirio\Deployer\Starter\StarterModuleInterface;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Security\SecurityInterface;
 

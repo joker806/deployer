@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Bootstrap;
+namespace Inspirio\Deployer\Starter;
 
 use Inspirio\Deployer\AbstractModule;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,7 +40,7 @@ abstract class AbstractStarterModule extends AbstractModule implements StarterMo
 
         $className = get_class($this);
         $className = substr($className, strrpos($className, '\\') + 1);
-        $template  = 'bootstrap/'. lcfirst($className) .'.html.php';
+        $template  = 'starter/'. lcfirst($className) .'.html.php';
 
         return $this->createTemplateResponse($template, $response);
     }

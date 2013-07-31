@@ -1,4 +1,4 @@
-<?php $this->decorator('bootstrap/decorator.html.php'); ?>
+<?php $this->decorator('starter/decorator.html.php'); ?>
 
 <form method="post" class="form-horizontal">
     <p>Enter project subversion repository</p>

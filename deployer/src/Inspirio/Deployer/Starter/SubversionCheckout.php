@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Bootstrap;
+namespace Inspirio\Deployer\Starter;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

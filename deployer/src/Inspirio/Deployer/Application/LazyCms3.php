@@ -2,7 +2,7 @@
 namespace Inspirio\Deployer\Application;
 
 
-use Inspirio\Deployer\Bootstrap\StarterModuleInterface;
+use Inspirio\Deployer\Starter\StarterModuleInterface;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Project;
 use Inspirio\Deployer\Security\SecurityInterface;
@@ -17,7 +17,7 @@ class LazyCms3 extends SymfonyApp
         parent::__construct($rootPath);
 
         $this
-            ->addStarter(new \Inspirio\Deployer\Bootstrap\SubversionCheckout())
+            ->addStarter(new \Inspirio\Deployer\Starter\SubversionCheckout())
 
             ->addModule(new \Inspirio\Deployer\Module\Info\InfoModule())
             ->addModule(new \Inspirio\Deployer\Module\Deployment\DeploymentModule())
