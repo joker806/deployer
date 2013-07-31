@@ -1,6 +1,7 @@
 <?php
 namespace Inspirio\Deployer\Starter;
 
+use Inspirio\Deployer\Command\SubversionCommand;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,6 +33,13 @@ class SubversionCheckout extends AbstractStarterModule
 
     public function startup($repoName, $repoPath, $revision)
     {
-        var_dump(func_get_args());
+        $subversion = new SubversionCommand($this->app->getRootPath());
+
+        $configurator = $this->getCommandConfigurator();
+        $configurator->configureSubversion($subversion, $repoName);
+
+        $repoConfig = $this->config->get('subversion', $repoName);
+
+        $subversion->checkout($repoConfig['url'] .'/'. $repoPath, $revision);
     }
 }
