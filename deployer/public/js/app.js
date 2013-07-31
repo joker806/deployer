@@ -3,39 +3,42 @@ $(document).ready(function() {
     var consoleOutput = $('#console-output');
     consoleOutput.hide();
 
-	$('form').each(function() {
-		var form = $(this),
-		    action = form.attr('action'),
-		    method = form.attr('method') || 'post';
+    $('form').each(function() {
+        var form    = $(this),
+            action  = form.attr('action') || document.URL,
+            method  = form.attr('method') || 'post',
+            buttons = form.find('button[type="submit"], input[type="submit"]'),
+            clickedButton;
 
-		var doSubmit = function(e, btn) {
-			e.preventDefault();
+        buttons.click(function(e) {
+            clickedButton = $(this);
+        });
 
-			var data = form.serializeArray();
+        form.submit(function(e) {
+            e.preventDefault();
 
-			if (btn.attr('name')) {
-				data.push({
-					name:  btn.attr('name'),
-					value: btn.attr('value')
-				});
-			}
+            var button = clickedButton || buttons.first(),
+                data   = form.serializeArray();
+
+            if (button.attr('name')) {
+                data.push({
+                    name:  button.attr('name'),
+                    value: button.attr('value')
+                });
+            }
 
             var req = createRequest();
-			req.open(method, action, true);
-			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-			req.send($.param(data));
-		};
+            req.open(method, action, true);
+            req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            req.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            req.send($.param(data));
+        });
 
-		var buttons = form.find('button[type="submit"], input[type="submit"]');
+        return this;
+    });
 
-		form.submit(function(e) { doSubmit(e, buttons.first()); });
-		buttons.click(function(e) { doSubmit(e, $(this)); });
-
-		return this;
-	});
-
-    var createRequest = function(consoleOutputEl) {
+    var createRequest = function()
+    {
         var req = new XMLHttpRequest();
 
         req.onreadystatechange = initialResponseHandler;

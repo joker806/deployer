@@ -1,30 +1,34 @@
 <?php $this->decorator('starter/decorator.html.php'); ?>
 
 <form method="post" class="form-horizontal">
-    <p>Enter project subversion repository</p>
+    <h3>Subversion checkout</h3>
 
     <div class="control-group">
-        <label class="control-label" for="checkout-repo">Repository</label>
+        <label class="control-label" for="checkout-repoName">Repository</label>
         <div class="controls">
-            <input class="input-xlarge" type="text" id="checkout-repo" name="repoUrl" value="<?php echo $repoUrl; ?>" />
+            <select id="checkout-repoName" name="repoName" required="required">
+                <?php
+                    foreach($repos as $repo) {
+                        $selected = ($repo == $repoName) ? 'selected="selected"' : '';
+                        echo "<option value=\"{$repo}\" {$selected}>{$repo}</option>";
+                    }
+                ?>
+            </select>
         </div>
     </div>
 
+
     <div class="control-group">
-        <label class="control-label" for="checkout-repo">Environment</label>
+        <label class="control-label" for="checkout-repo">Path</label>
         <div class="controls">
-            <select id="checkout-env" name="env">
-                <option value="dev">Development</option>
-                <option value="test">Testing</option>
-                <option value="prod">Production</option>
-            </select>
+            <input id="checkout-repo" class="input-xlarge" type="text" name="repoPath" required="required" value="<?php echo $repoPath; ?>" />
         </div>
     </div>
 
     <div class="control-group">
         <label class="control-label" for="checkout-revision">Revision</label>
         <div class="controls">
-            <input type="text" id="checkout-revision" name="revision" value="<?php echo $revision; ?>" />
+            <input id="checkout-revision" class="input-small" type="text" name="revision" required="required" value="<?php echo $revision; ?>" />
         </div>
     </div>
 

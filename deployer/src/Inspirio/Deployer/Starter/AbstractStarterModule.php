@@ -94,7 +94,7 @@ abstract class AbstractStarterModule extends AbstractModule implements StarterMo
 
             } else {
                 $moduleName = get_class($this);
-                throw new \InvalidArgumentException("Missing starter module '{$moduleName}' startup method '{$name}' parameter value");
+                throw new \InvalidArgumentException("Missing '{$moduleName}' starter module 'startup' method '{$name}' parameter value");
             }
         }
 

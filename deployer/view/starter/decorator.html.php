@@ -7,4 +7,6 @@
     <h1>Project initialization</h1>
 
     <?= $subContent ?>
+
+    <div id="console-output"></div>
 </div>

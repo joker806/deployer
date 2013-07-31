@@ -3,12 +3,13 @@ namespace Inspirio\Deployer;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\Config\ConfigAware;
 use Inspirio\Deployer\View\View;
 use Inspirio\Deployer\View\ViewAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class AbstractModule implements ModuleInterface, ViewAware
+abstract class AbstractModule implements ModuleInterface, ConfigAware, ViewAware
 {
     /**
      * @var Config

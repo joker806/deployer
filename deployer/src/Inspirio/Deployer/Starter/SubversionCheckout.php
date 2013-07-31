@@ -19,9 +19,19 @@ class SubversionCheckout extends AbstractStarterModule
      */
     public function render(Request $request)
     {
+        $repos = $this->config->get('subversion');
+        $repos = is_array($repos) ? array_keys($repos) : array();
+
         return array(
-            'repoUrl'  => '',
+            'repos'    => $repos,
+            'repoName' => '',
+            'repoPath' => '',
             'revision' => 'HEAD',
         );
+    }
+
+    public function startup($repoName, $repoPath, $revision)
+    {
+        var_dump(func_get_args());
     }
 }
