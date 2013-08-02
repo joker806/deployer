@@ -4,7 +4,7 @@ namespace Inspirio\Deployer\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-interface SecurityInterface
+interface SecurityModuleInterface
 {
     /**
      * Authorizes request.

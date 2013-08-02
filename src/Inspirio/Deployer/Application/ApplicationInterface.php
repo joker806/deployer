@@ -4,7 +4,6 @@ namespace Inspirio\Deployer\Application;
 use Inspirio\Deployer\Starter\StarterModuleInterface;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\ProjectInfoInterface;
-use Inspirio\Deployer\Security\SecurityInterface;
 
 interface ApplicationInterface {
 

@@ -6,7 +6,7 @@ use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Config\ConfigAware;
 use Symfony\Component\HttpFoundation\Request;
 
-class IpFilterSecurity implements SecurityInterface, ConfigAware
+class IpFilterSecurity implements SecurityModuleInterface, ConfigAware
 {
     protected $allowedIps = false;
 

@@ -1,11 +1,7 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
-
-use Inspirio\Deployer\Starter\StarterModuleInterface;
-use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Project;
-use Inspirio\Deployer\Security\SecurityInterface;
 
 class LazyCms3 extends SymfonyApp
 {

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class PassPhraseSecurity implements SecurityInterface, ConfigAware
+abstract class PassPhraseSecurity implements SecurityModuleInterface, ConfigAware
 {
     /**
      * {@inheritdoc}

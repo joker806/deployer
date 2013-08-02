@@ -6,7 +6,7 @@ use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Config\ConfigAware;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
-use Inspirio\Deployer\Security\SecurityInterface;
+use Inspirio\Deployer\Security\SecurityModuleInterface;
 use Inspirio\Deployer\View\View;
 use Inspirio\Deployer\View\ViewAware;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +37,7 @@ class RequestHandler
     private $app;
 
     /**
-     * @var SecurityInterface[]
+     * @var SecurityModuleInterface[]
      */
     private $security;
 
@@ -59,10 +59,10 @@ class RequestHandler
     /**
      * Registers security module.
      *
-     * @param SecurityInterface $security
+     * @param SecurityModuleInterface $security
      * @return $this
      */
-    public function addSecurity(SecurityInterface $security)
+    public function addSecurity(SecurityModuleInterface $security)
     {
         $this->security[] = $security;
         return $this;

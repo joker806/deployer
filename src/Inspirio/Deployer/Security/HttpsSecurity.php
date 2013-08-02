@@ -6,7 +6,7 @@ use Inspirio\Deployer\Config\ConfigAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HttpsSecurity implements SecurityInterface, ConfigAware
+class HttpsSecurity implements SecurityModuleInterface, ConfigAware
 {
     /**
      * @var bool
