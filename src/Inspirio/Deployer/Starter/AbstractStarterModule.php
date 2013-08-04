@@ -28,21 +28,27 @@ abstract class AbstractStarterModule extends AbstractModule implements StarterMo
             return $this->runStartup($request);
         }
 
-        $response = $this->render($request);
+        $this->view->setDefaultData(array(
+            'app'     => $this->app,
+            'module'  => $this,
+            'request' => $request,
+        ));
 
-        if ($response instanceof Response) {
-            return $response;
-        }
+        $this->view->pushDecorator('page.html.php');
+        $this->view->pushDecorator('starter/decorator.html.php');
 
-        if (is_scalar($response)) {
-            return new Response($response);
+        $content = $this->render($request);
+
+        if (is_scalar($content)) {
+            return new Response($content);
         }
 
         $className = get_class($this);
         $className = substr($className, strrpos($className, '\\') + 1);
         $template  = 'starter/'. lcfirst($className) .'.html.php';
 
-        return $this->createTemplateResponse($template, $response);
+        $content = $this->view->render($template, $content);
+        return new Response($content);
     }
 
     /**

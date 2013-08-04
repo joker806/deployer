@@ -142,8 +142,6 @@ class RequestHandler
      */
     private function handleRequest(Request $request)
     {
-        $this->view['app'] = $this->app;
-
         if ($response = $this->checkSecurity($request)) {
             return $response;
         }
@@ -197,6 +195,10 @@ class RequestHandler
         foreach ($this->security as $security) {
             if ($security instanceof ConfigAware) {
                 $security->setConfig($this->config);
+            }
+
+            if ($security instanceof ViewAware) {
+                $security->setView($this->view);
             }
 
             $response = $security->authorize($request);

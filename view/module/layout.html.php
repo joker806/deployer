@@ -1,5 +1,3 @@
-<?php $this->decorator('module/decorator.html.php') ?>
-
 <?php if (count($sections) > 1) { ?>
     <ul class="nav nav-tabs">
         <?php

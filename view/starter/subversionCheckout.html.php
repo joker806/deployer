@@ -1,5 +1,3 @@
-<?php $this->decorator('starter/decorator.html.php'); ?>
-
 <form method="post" class="form-horizontal">
     <h3>Subversion checkout</h3>
 

@@ -1,9 +1,8 @@
 <?php
 namespace Inspirio\Deployer\View;
 
-use string;
-
-class View implements \ArrayAccess {
+class View
+{
 
     /**
      * @var string[]
@@ -13,7 +12,7 @@ class View implements \ArrayAccess {
     /**
      * @var array
      */
-    private $data;
+    private $defaultData;
 
     /**
      * @var string
@@ -21,9 +20,9 @@ class View implements \ArrayAccess {
     private $templateFile;
 
     /**
-     * @var null|string
+     * @var string[]
      */
-    private $decorator;
+    private $decorators;
 
     /**
      * Constructor.
@@ -32,99 +31,61 @@ class View implements \ArrayAccess {
     public function __construct($templateDir)
     {
         $this->templateDir = $templateDir;
-        $this->data        = array();
-        $this->decorator   = null;
+        $this->defaultData = array();
+        $this->decorators  = array();
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->data[$offset]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        if (!$this->offsetExists($offset)) {
-            throw new \DomainException("Invalid data item '{$offset}' requested");
-        }
-
-        return $this->data[$offset];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->data[$offset] = $value;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetUnset($offset)
-    {
-        unset($this->data[$offset]);
-    }
-
-    /**
-     * Adds data.
+     * Sets view default data.
      *
      * @param array $data
      */
-    public function addData(array $data)
+    public function setDefaultData(array $data)
     {
-        $this->data = $data + $this->data;
+        $this->defaultData = $data;
     }
 
     /**
-     * Sets current template decorator.
+     * Adds default data item.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function addDefaultData($key, $value)
+    {
+        $this->defaultData[$key] = $value;
+    }
+
+    /**
+     * Adds template decorator.
      *
      * @param string $decorator
+     * @param array $data
      */
-    public function decorator($decorator)
+    public function pushDecorator($decorator, array $data = array())
     {
-        $this->decorator = $decorator;
+        $this->decorators[] = array($decorator, $data);
     }
 
     /**
      * Renders the template.
      *
-     * @param string $templateName
-     * @param array  $data
+     * @param string $template
+     * @param array $data
      * @return string
      */
-    public function render($templateName, array $data = array())
+    public function render($template, array $data = array())
     {
-        $this->decorator    = null;
+        $content = $this->doRender($template, $data + $this->defaultData);
 
-        $data += $this->data;
+        foreach (array_reverse($this->decorators) as $decorator) {
+            list($template, $data) = $decorator;
 
-        $content = $this->doRender($templateName, $data);
-        $content = $this->renderDecorator($content);
+            $data += $this->defaultData;
+            $data['subContent'] = $content;
 
-        return $content;
-    }
-
-    private function renderDecorator($content)
-    {
-        if (!$this->decorator) {
-            return $content;
+            $content = $this->doRender($template, $data);
         }
-
-        $decorator       = $this->decorator;
-        $this->decorator = null;
-
-        $data = $this->data;
-        $data['subContent'] = $content;
-
-        $content = $this->doRender($decorator, $data);
-        $content = $this->renderDecorator($content);
 
         return $content;
     }
@@ -133,7 +94,7 @@ class View implements \ArrayAccess {
      * Renders the template.
      *
      * @param string $templateFile
-     * @param array  $context
+     * @param array $context
      * @return string
      */
     private function doRender($templateFile, array $context)
@@ -141,7 +102,8 @@ class View implements \ArrayAccess {
         extract($context);
 
         ob_start();
-        include $this->templateDir .'/'. $templateFile;
+        include $this->templateDir . '/' . $templateFile;
+
         return ob_get_clean();
     }
 }
