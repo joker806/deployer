@@ -1,4 +1,3 @@
 build
-deployer/vendor
-deployer/deployer.yml
+vendor
 project
