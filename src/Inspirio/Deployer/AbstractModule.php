@@ -4,13 +4,22 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Config\ConfigAware;
-use Inspirio\Deployer\View\View;
 use Inspirio\Deployer\View\ViewAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractModule implements ModuleInterface, ConfigAware, ViewAware
 {
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $title;
+
     /**
      * @var Config
      */
@@ -20,11 +29,6 @@ abstract class AbstractModule implements ModuleInterface, ConfigAware, ViewAware
      * @var ApplicationInterface
      */
     protected $app;
-
-    /**
-     * @var View
-     */
-    protected $view;
 
     /**
      * @var CommandConfigurator
@@ -55,9 +59,38 @@ abstract class AbstractModule implements ModuleInterface, ConfigAware, ViewAware
     /**
      * {@inheritdoc}
      */
-    public function setView(View $view)
+    public function getName()
     {
-        $this->view = $view;
+        if (!$this->name) {
+            $name = get_class($this);
+
+            if (($slashPos = strrpos($name, '/')) !== false) {
+                $name = substr($name, $slashPos + 1);
+            }
+
+            $name = preg_replace('/[A-Z]/', '_$0', $name);
+            $name = strtolower($name);
+
+            $this->name = $name;
+        }
+
+        return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTitle()
+    {
+        if (!$this->title) {
+            $title = $this->getName();
+            $title = preg_replace('/_([a-z])/', ' $1', $title);
+            $title = ucfirst($title);
+
+            $this->title = $title;
+        }
+
+        return $this->title;
     }
 
     /**
@@ -86,20 +119,6 @@ abstract class AbstractModule implements ModuleInterface, ConfigAware, ViewAware
         }
 
         return $this->featureDetector;
-    }
-
-    /**
-     * Creates a response containing a rendered template.
-     *
-     * @param $template
-     * @param array $data
-     * @return Response
-     */
-    protected function createTemplateResponse($template, array $data = array())
-    {
-        $content = $this->view->render($template, $data);
-
-        return new Response($content);
     }
 
     /**

@@ -11,24 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
  */
 interface ActionModuleInterface extends ModuleInterface
 {
-	/**
-	 * Returns action name. Must be plain string without spaces.
-	 *
-	 * @return string
-	 */
-	public function getName();
-
-	/**
-	 * Returns action title. May contain HTML formatting.
-	 *
-	 * @return string
-	 */
-	public function getTitle();
-
-	/**
-	 * Checks if the action is enabled.
-	 *
-	 * @return bool
-	 */
-	public function isEnabled();
+    /**
+     * Checks if the action is enabled.
+     *
+     * @return bool
+     */
+    public function isEnabled();
 }

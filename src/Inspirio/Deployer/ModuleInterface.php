@@ -2,10 +2,8 @@
 namespace Inspirio\Deployer;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
-use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Config\ConfigAware;
-use Inspirio\Deployer\View\View;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 interface ModuleInterface
 {
@@ -17,10 +15,24 @@ interface ModuleInterface
     public function setApp(ApplicationInterface $app);
 
     /**
-     * Renders the action user interface.
+     * Returns module title.
+     *
+     * @return string
+     */
+    public function getTitle();
+
+    /**
+     * Returns module name.
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * Renders module.
      *
      * @param Request $request
      * @return string
      */
-    public function handleRequest(Request $request);
+    public function render(Request $request);
 }

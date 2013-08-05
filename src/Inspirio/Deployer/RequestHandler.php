@@ -7,6 +7,7 @@ use Inspirio\Deployer\Config\ConfigAware;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
 use Inspirio\Deployer\Security\SecurityModuleInterface;
+use Inspirio\Deployer\Starter\StarterModuleInterface;
 use Inspirio\Deployer\View\View;
 use Inspirio\Deployer\View\ViewAware;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,53 +69,6 @@ class RequestHandler
         return $this;
     }
 
-
-    /**
-     * Runs the action.
-     *
-     * @param ActionModuleInterface $module
-     * @param string          $action
-     * @param array           $args
-     * @return Response
-     *
-     * @throws \LogicException
-     * @throws \InvalidArgumentException
-     */
-    public function runAction(ActionModuleInterface $module, $action, array $args)
-    {
-        $actionRefl = null;
-
-        try {
-            $actionRefl = new \ReflectionMethod(get_class($module), $action .'Action');
-        } catch (\ReflectionException $e) {}
-
-        if (!$actionRefl || !$actionRefl->isPublic()) {
-            throw new \LogicException("Module '{$module->getName()}' has no action '{$action}'");
-        }
-
-        $realArgs = array();
-
-        foreach ($actionRefl->getParameters() as $i => $param) {
-            $name = $param->getName();
-
-            if (array_key_exists($name, $args)) {
-                $realArgs[$i] = $args[$name];
-
-            } elseif ($param->isOptional()) {
-                $realArgs[$i] = $param->getDefaultValue();
-
-            } else {
-                throw new \InvalidArgumentException("Action '{$module->getName()}' is missing  '{$name}' parameter value");
-            }
-        }
-
-        $response = new StreamedResponse(function() use ($actionRefl, $module, $realArgs) {
-            $actionRefl->invokeArgs($module, $realArgs);
-        });
-
-        return $response;
-    }
-
 	/**
 	 * Handles the HTTP request.
 	 *
@@ -142,103 +96,233 @@ class RequestHandler
      */
     private function handleRequest(Request $request)
     {
-        if ($response = $this->checkSecurity($request)) {
-            return $response;
+        if ($request->isMethod('post') && !$request->isXmlHttpRequest()) {
+            throw new \Exception('Handling of non-ajax POST requests is not implemented yet');
         }
 
-        if ($response = $this->startupApp($request)) {
-            return $response;
+        if ($request->query->has('module')) {
+            $moduleName = $request->query->get('module');
+            $module     = $this->findModuleByName($moduleName);
+
+        } elseif ($request->isMethod('get')) {
+            $module =
+                $this->pickSecurityModule($request) ? :
+                    $this->pickStarterModule() ? :
+                        $this->pickActionModule();
+
+        } else {
+            return new Response('405 Method Not Allowed', 405);
         }
-
-        $moduleName    = $request->query->get('module', $this->app->getHomeModuleName());
-        $requestModule = null;
-
-        foreach($this->app->getModules() as $module) {
-            if ($module instanceof ConfigAware) {
-                $module->setConfig($this->config);
-            }
-
-            if (!$module->isEnabled()) {
-                continue;
-            }
-
-            if ($module->getName() == $moduleName) {
-                $request->attributes->set('module', $module);
-            }
-        }
-
-        /** @var $module ModuleInterface */
-        $module = $request->attributes->get('module');
 
         if (!$module) {
             return new Response('404 Not Found', 404);
         }
 
+        $request->attributes->set('module', $module);
+
+        if ($request->isMethod('post')) {
+            return $this->runModuleAction($module, $request);
+
+        } else {
+            return $this->renderModule($module, $request);
+        }
+    }
+
+    /**
+     * Finds module by name.
+     *
+     * This does no additional check (e.g. check if module is enabled).
+     *
+     * @param string $name
+     * @return ModuleInterface|null
+     */
+    private function findModuleByName($name)
+    {
+        /** @var $modules ModuleInterface[] */
+        $modules = array_merge(
+            $this->security,
+            $this->app->getStarters(),
+            $this->app->getModules()
+        );
+
+        foreach ($modules as $module) {
+            $this->initModule($module);
+
+            if ($module->getName() === $name) {
+                return $module;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Picks a security module that is not authorized yet.
+     *
+     * @param Request $request
+     * @return SecurityModuleInterface|null
+     */
+    private function pickSecurityModule(Request $request)
+    {
+        foreach ($this->security as $module) {
+            $this->initModule($module);
+
+            if (!$module->isAuthorized($request)) {
+                return $module;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Picks a starter module that is not started yet.
+     *
+     * @return StarterModuleInterface|null
+     */
+    private function pickStarterModule()
+    {
+        foreach ($this->app->getStarters() as $module) {
+            $this->initModule($module);
+
+            if (!$module->isStarted()) {
+                return $module;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Picks an default action module.
+     *
+     * @return ActionModuleInterface|null
+     */
+    private function pickActionModule()
+    {
+        $moduleName = $this->app->getHomeModuleName();
+
+        foreach ($this->app->getModules() as $module) {
+            $this->initModule($module);
+
+            if ($module->getName() == $moduleName && $module->isEnabled()) {
+                return $module;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Initializes module.
+     *
+     * @param ModuleInterface $module
+     */
+    private function initModule(ModuleInterface $module)
+    {
+        if ($module instanceof ConfigAware) {
+            $module->setConfig($this->config);
+        }
+
         if ($module instanceof ViewAware) {
-            $this->view['module'] = $module;
             $module->setView($this->view);
         }
-
-        $content = $module->handleRequest($request);
-
-        return new Response($content);
     }
 
     /**
-     * Checks security rules.
+     * Renders module.
      *
+     * @param ModuleInterface $module
      * @param Request $request
-     * @return null|Response
+     * @return Response
      */
-    private function checkSecurity(Request $request)
+    private function renderModule(ModuleInterface $module, Request $request)
     {
-        foreach ($this->security as $security) {
-            if ($security instanceof ConfigAware) {
-                $security->setConfig($this->config);
-            }
+        $response = $module->render($request);
 
-            if ($security instanceof ViewAware) {
-                $security->setView($this->view);
-            }
-
-            $response = $security->authorize($request);
-
-            if ($response instanceof Response) {
-                return $response;
-            }
-
-            if (!$response) {
-                return new Response('403 Forbidden', 403);
-            }
+        // complete response returned
+        if ($response instanceof Response) {
+            return $response;
         }
 
-        return null;
+        // rendered content returned
+        if (is_scalar($response)) {
+            return new Response($response);
+        }
+
+        // view data returned
+        $view = $this->view;
+
+        $view->setDefaultData(
+            array(
+                'app'     => $this->app,
+                'module'  => $this,
+                'request' => $request,
+            )
+        );
+
+        $view->pushDecorator('page.html.php');
+        $view->pushDecorator('starter/decorator.html.php');
+
+        $className = get_class($module);
+        $className = substr($className, strrpos($className, '\\') + 1);
+        $template  = 'starter/' . lcfirst($className) . '.html.php';
+
+        $response = $this->view->render($template, $response);
+        return new Response($response);
     }
 
     /**
-     * Checks if application is started-up and shows start-up screen if not.
+     * Runs module action.
      *
+     * @param ModuleInterface $module
      * @param Request $request
-     * @return null|Response
+     *
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
+     * @return StreamedResponse
      */
-    private function startupApp(Request $request)
+    private function runModuleAction(ModuleInterface $module, Request $request)
     {
-        foreach ($this->app->getStarters() as $starter) {
-            if ($starter instanceof ConfigAware) {
-                $starter->setConfig($this->config);
-            }
+        if (!$request->request->has('run')) {
+            throw new \InvalidArgumentException("Missing 'run' parameter data");
+        }
 
-            if ($starter instanceof ViewAware) {
-                $starter->setView($this->view);
-            }
+        $action = $request->request->get('run');
+        $request->request->remove('run');
 
-            $response = $starter->handleRequest($request);
+        $actionMethod = null;
 
-            if ($response instanceof Response) {
-                return $response;
+        try {
+            $actionMethod = new \ReflectionMethod($module, $action . 'Action');
+        } catch (\ReflectionException $e) {
+        }
+
+        if (!$actionMethod || !$actionMethod->isPublic()) {
+            $moduleName = get_class($module);
+            throw new \LogicException("Starter module '{$moduleName}' is missing 'startup' method");
+        }
+
+        $args     = $request->request->all();
+        $realArgs = array();
+
+        foreach ($actionMethod->getParameters() as $i => $param) {
+            $name = $param->getName();
+
+            if (array_key_exists($name, $args)) {
+                $realArgs[$i] = $args[$name];
+
+            } elseif ($param->isOptional()) {
+                $realArgs[$i] = $param->getDefaultValue();
+
+            } else {
+                $moduleName = get_class($this);
+                throw new \InvalidArgumentException("Missing '{$moduleName}' starter module 'startup' method '{$name}' parameter value");
             }
         }
 
-        return null;
+        return new StreamedResponse(function () use ($actionMethod, $module, $realArgs) {
+            $actionMethod->invokeArgs($module, $realArgs);
+        });
     }
 }

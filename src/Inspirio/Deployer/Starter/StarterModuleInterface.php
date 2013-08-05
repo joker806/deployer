@@ -1,8 +1,8 @@
 <?php
 namespace Inspirio\Deployer\Starter;
 
-use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\ModuleInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -13,9 +13,16 @@ use Symfony\Component\HttpFoundation\Response;
 interface StarterModuleInterface extends ModuleInterface
 {
     /**
-     * Sets application to startup.
+     * Checks if application is started.
      *
-     * @param ApplicationInterface $app
+     * @return bool
      */
-    public function setApp(ApplicationInterface $app);
+    public function isStarted();
+
+    /**
+     * Startup application.
+     *
+     * @param array $data
+     */
+    public function startupAction(array $data);
 }

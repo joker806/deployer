@@ -1,16 +1,24 @@
 <?php
 namespace Inspirio\Deployer\Security;
 
+use Inspirio\Deployer\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
-interface SecurityModuleInterface
+interface SecurityModuleInterface extends ModuleInterface
 {
     /**
-     * Authorizes request.
+     * Checks if user request is authorized.
      *
      * @param Request $request
-     * @return bool|Response
+     * @return bool
      */
-    public function authorize(Request $request);
+    public function isAuthorized(Request $request);
+
+    /**
+     * Authorizes user request.
+     *
+     * @param Request $request
+     * @return bool
+     */
+    public function authorizeAction(Request $request);
 }
