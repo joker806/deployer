@@ -4,6 +4,8 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Config\ConfigAware;
+use Inspirio\Deployer\Exception\Request\NotAuthenticatedException;
+use Inspirio\Deployer\Exception\Request\NotStartedException;
 use Inspirio\Deployer\Module\ActionModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
 use Inspirio\Deployer\Security\SecurityModuleInterface;
@@ -96,23 +98,18 @@ class RequestHandler
      */
     private function handleRequest(Request $request)
     {
+        if (
+            !$request->isMethod('get') &&
+            !($request->isMethod('post') && $request->query->has('module'))
+        ) {
+            return new Response('405 Method Not Allowed', 405);
+        }
+
         if ($request->isMethod('post') && !$request->isXmlHttpRequest()) {
             throw new \Exception('Handling of non-ajax POST requests is not implemented yet');
         }
 
-        if ($request->query->has('module')) {
-            $moduleName = $request->query->get('module');
-            $module     = $this->findModuleByName($moduleName);
-
-        } elseif ($request->isMethod('get')) {
-            $module =
-                $this->pickSecurityModule($request) ? :
-                    $this->pickStarterModule() ? :
-                        $this->pickActionModule();
-
-        } else {
-            return new Response('405 Method Not Allowed', 405);
-        }
+        $module = $this->pickModule($request);
 
         if (!$module) {
             return new Response('404 Not Found', 404);
@@ -129,31 +126,39 @@ class RequestHandler
     }
 
     /**
-     * Finds module by name.
+     * Finds module to launch.
      *
-     * This does no additional check (e.g. check if module is enabled).
-     *
-     * @param string $name
+     * @param Request $request
      * @return ModuleInterface|null
+     *
+     * @throws Exception\Request\NotAuthenticatedException
+     * @throws Exception\Request\NotStartedException
      */
-    private function findModuleByName($name)
+    private function pickModule(Request $request)
     {
-        /** @var $modules ModuleInterface[] */
-        $modules = array_merge(
-            $this->security,
-            $this->app->getStarters(),
-            $this->app->getModules()
-        );
+        $moduleName = $request->query->get('module');
 
-        foreach ($modules as $module) {
-            $this->initModule($module);
+        $module = $this->checkSecurity($request);
 
-            if ($module->getName() === $name) {
-                return $module;
+        if ($module) {
+            if ($moduleName !== null && $module->getName() !== $moduleName) {
+                throw new NotAuthenticatedException();
             }
+
+            return $module;
         }
 
-        return null;
+        $module = $this->checkStarters();
+
+        if ($module) {
+            if ($moduleName !== null && $module->getName() !== $moduleName) {
+                throw new NotStartedException();
+            }
+
+            return $module;
+        }
+
+        return $this->pickActionModule($moduleName);
     }
 
     /**
@@ -162,7 +167,7 @@ class RequestHandler
      * @param Request $request
      * @return SecurityModuleInterface|null
      */
-    private function pickSecurityModule(Request $request)
+    private function checkSecurity(Request $request)
     {
         foreach ($this->security as $module) {
             $this->initModule($module);
@@ -180,7 +185,7 @@ class RequestHandler
      *
      * @return StarterModuleInterface|null
      */
-    private function pickStarterModule()
+    private function checkStarters()
     {
         foreach ($this->app->getStarters() as $module) {
             $this->initModule($module);
@@ -196,16 +201,23 @@ class RequestHandler
     /**
      * Picks an default action module.
      *
+     * @param string|null $moduleName
      * @return ActionModuleInterface|null
      */
-    private function pickActionModule()
+    private function pickActionModule($moduleName = null)
     {
-        $moduleName = $this->app->getHomeModuleName();
+        if ($moduleName === null) {
+            $moduleName = $this->app->getHomeModuleName();
+        }
 
         foreach ($this->app->getModules() as $module) {
             $this->initModule($module);
 
-            if ($module->getName() == $moduleName && $module->isEnabled()) {
+            if (!$module->isEnabled()) {
+                continue;
+            }
+
+            if ($module->getName() == $moduleName) {
                 return $module;
             }
         }
