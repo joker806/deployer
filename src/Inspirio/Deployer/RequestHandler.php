@@ -3,15 +3,10 @@ namespace Inspirio\Deployer;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Config\ConfigAware;
-use Inspirio\Deployer\Exception\Request\NotAuthenticatedException;
-use Inspirio\Deployer\Exception\Request\NotStartedException;
-use Inspirio\Deployer\Module\ActionModuleInterface;
+use Inspirio\Deployer\Middleware\MiddlewareInterface;
+use Inspirio\Deployer\Middleware\ModuleInterface;
 use Inspirio\Deployer\Module\Info\InfoModule;
-use Inspirio\Deployer\Security\SecurityModuleInterface;
-use Inspirio\Deployer\Starter\StarterModuleInterface;
 use Inspirio\Deployer\View\View;
-use Inspirio\Deployer\View\ViewAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -40,44 +35,44 @@ class RequestHandler
     private $app;
 
     /**
-     * @var SecurityModuleInterface[]
+     * @var MiddlewareInterface[]
      */
-    private $security;
+    private $middlewares;
 
     /**
      * Constructor.
      *
-     * @param Config               $config
-     * @param View                 $view
+     * @param Config $config
+     * @param View $view
      * @param ApplicationInterface $app
      */
     public function __construct(Config $config, View $view, ApplicationInterface $app)
     {
-        $this->config   = $config;
-        $this->view     = $view;
-        $this->app      = $app;
-        $this->security = array();
+        $this->config      = $config;
+        $this->view        = $view;
+        $this->app         = $app;
+        $this->middlewares = array();
     }
 
     /**
      * Registers security module.
      *
-     * @param SecurityModuleInterface $security
+     * @param MiddlewareInterface $middleware
      * @return $this
      */
-    public function addSecurity(SecurityModuleInterface $security)
+    public function addMiddleware(MiddlewareInterface $middleware)
     {
-        $this->security[] = $security;
+        $this->middlewares[] = $middleware;
         return $this;
     }
 
-	/**
-	 * Handles the HTTP request.
-	 *
-	 * @return string
-	 */
-	public function dispatch()
-	{
+    /**
+     * Handles the HTTP request.
+     *
+     * @return string
+     */
+    public function dispatch()
+    {
         $request = Request::createFromGlobals();
 
         $session = new Session();
@@ -85,7 +80,7 @@ class RequestHandler
 
         $response = $this->handleRequest($request);
         $response->send();
-	}
+    }
 
     /**
      * Handles request.
@@ -109,136 +104,39 @@ class RequestHandler
             throw new \Exception('Handling of non-ajax POST requests is not implemented yet');
         }
 
-        $module = $this->pickModule($request);
-
-        if (!$module) {
-            return new Response('404 Not Found', 404);
-        }
-
-        $request->attributes->set('module', $module);
-
-        if ($request->isMethod('post')) {
-            return $this->runModuleAction($module, $request);
-
-        } else {
-            return $this->renderModule($module, $request);
-        }
-    }
-
-    /**
-     * Finds module to launch.
-     *
-     * @param Request $request
-     * @return ModuleInterface|null
-     *
-     * @throws Exception\Request\NotAuthenticatedException
-     * @throws Exception\Request\NotStartedException
-     */
-    private function pickModule(Request $request)
-    {
         $moduleName = $request->query->get('module');
 
-        $module = $this->checkSecurity($request);
+        foreach ($this->middlewares as $middleware) {
+            $result = $middleware->interceptRequest($request, $moduleName);
 
-        if ($module) {
-            if ($moduleName !== null && $module->getName() !== $moduleName) {
-                throw new NotAuthenticatedException();
-            }
-
-            return $module;
-        }
-
-        $module = $this->checkStarters();
-
-        if ($module) {
-            if ($moduleName !== null && $module->getName() !== $moduleName) {
-                throw new NotStartedException();
-            }
-
-            return $module;
-        }
-
-        return $this->pickActionModule($moduleName);
-    }
-
-    /**
-     * Picks a security module that is not authorized yet.
-     *
-     * @param Request $request
-     * @return SecurityModuleInterface|null
-     */
-    private function checkSecurity(Request $request)
-    {
-        foreach ($this->security as $module) {
-            $this->initModule($module);
-
-            if (!$module->isAuthorized($request)) {
-                return $module;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Picks a starter module that is not started yet.
-     *
-     * @return StarterModuleInterface|null
-     */
-    private function checkStarters()
-    {
-        foreach ($this->app->getStarters() as $module) {
-            $this->initModule($module);
-
-            if (!$module->isStarted()) {
-                return $module;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Picks an default action module.
-     *
-     * @param string|null $moduleName
-     * @return ActionModuleInterface|null
-     */
-    private function pickActionModule($moduleName = null)
-    {
-        if ($moduleName === null) {
-            $moduleName = $this->app->getHomeModuleName();
-        }
-
-        foreach ($this->app->getModules() as $module) {
-            $this->initModule($module);
-
-            if (!$module->isEnabled()) {
+            if ($result === null) {
                 continue;
             }
 
-            if ($module->getName() == $moduleName) {
-                return $module;
+            if ($result instanceof Response) {
+                return $result;
             }
+
+            if ($result instanceof ModuleInterface) {
+                $request->attributes->set('module', $result);
+
+                if ($request->isMethod('post')) {
+                    return $this->runModuleAction($result, $request);
+
+                } else {
+                    return $this->renderModule($result, $request);
+                }
+            }
+
+            $hint = is_object($result) ? get_class($result) : gettype($result);
+            throw new \LogicException(
+                "Invalid middleware result type. " .
+                "Expected instance of \\Symfony\\Component\\HttpFoundation\\Response, " .
+                "\\Inspirio\\Deployer\\Middleware\\ModuleInterface or NULL, got {$hint}"
+            );
         }
 
-        return null;
-    }
-
-    /**
-     * Initializes module.
-     *
-     * @param ModuleInterface $module
-     */
-    private function initModule(ModuleInterface $module)
-    {
-        if ($module instanceof ConfigAware) {
-            $module->setConfig($this->config);
-        }
-
-        if ($module instanceof ViewAware) {
-            $module->setView($this->view);
-        }
+        return new Response('404 Not Found', 404);
     }
 
     /**
@@ -250,16 +148,11 @@ class RequestHandler
      */
     private function renderModule(ModuleInterface $module, Request $request)
     {
-        $response = $module->render($request);
-
-        // complete response returned
-        if ($response instanceof Response) {
-            return $response;
-        }
+        $content = $module->render($request);
 
         // rendered content returned
-        if (is_scalar($response)) {
-            return new Response($response);
+        if (is_scalar($content)) {
+            return new Response($content);
         }
 
         // view data returned
@@ -280,8 +173,8 @@ class RequestHandler
         $className = substr($className, strrpos($className, '\\') + 1);
         $template  = 'starter/' . lcfirst($className) . '.html.php';
 
-        $response = $this->view->render($template, $response);
-        return new Response($response);
+        $content = $this->view->render($template, $content);
+        return new Response($content);
     }
 
     /**

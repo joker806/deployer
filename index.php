@@ -14,12 +14,12 @@ $appDir = __DIR__;
 
 // PHAR environment
 if (substr($appDir, 0, 7) === 'phar://') {
-	$appDir = substr($appDir, 7);
-	$appDir = dirname($appDir);
+    $appDir = substr($appDir, 7);
+    $appDir = dirname($appDir);
 
 // development environment
 } else {
-    $appDir = $appDir .'/../project';
+    $appDir = $appDir . '/../project';
 
     if (!file_exists($appDir)) {
         mkdir($appDir);
@@ -29,13 +29,21 @@ if (substr($appDir, 0, 7) === 'phar://') {
 $app = new \Inspirio\Deployer\Application\LazyCms3($appDir);
 
 $config   = new Config('deployer.yml');
-$view     = new View(__DIR__ .'/view');
+$view     = new View(__DIR__ . '/view');
 $deployer = new RequestHandler($config, $view, $app);
 
+$securityMw = new \Inspirio\Deployer\Middleware\SecurityMiddleware(array(
+    new \Inspirio\Deployer\Security\IpFilterSecurity(),
+    new \Inspirio\Deployer\Security\HttpsSecurity(),
+    new \Inspirio\Deployer\Security\StaticPassPhraseSecurity(),
+));
+
+$starterMw = new \Inspirio\Deployer\Middleware\StarterMiddleware($app);
+$moduleMw  = new \Inspirio\Deployer\Middleware\ModuleMiddleware($app);
+
 $deployer
-    ->addSecurity(new \Inspirio\Deployer\Security\IpFilterSecurity())
-    ->addSecurity(new \Inspirio\Deployer\Security\HttpsSecurity())
-    ->addSecurity(new \Inspirio\Deployer\Security\StaticPassPhraseSecurity())
-;
+    ->addMiddleware($securityMw)
+    ->addMiddleware($starterMw)
+    ->addMiddleware($moduleMw);
 
 echo $deployer->dispatch();
