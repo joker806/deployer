@@ -1,11 +1,5 @@
 <?php
-use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Middleware\ModuleMiddleware;
-use Inspirio\Deployer\Middleware\SecurityMiddleware;
-use Inspirio\Deployer\Middleware\StarterMiddleware;
-use Inspirio\Deployer\RequestHandler;
-use Inspirio\Deployer\Security;
-use Inspirio\Deployer\View\View;
+use Inspirio\Deployer\Container;
 use Symfony\Component\Debug\Debug;
 
 require_once __DIR__ . '/../env.php';
@@ -29,28 +23,12 @@ require DEPLOYER_HOME_DIR .'/vendor/autoload.php';
 // setup error handling
 Debug::enable(E_ALL, DEPLOYER_ENV === 'development');
 
-// load app
-$app = require __DIR__ .'/../app.php';
-
-// setup middlewares
-$securityMw = new SecurityMiddleware(array(
-    new Security\IpFilterSecurity(),
-    new Security\HttpsSecurity(),
-    new Security\StaticPassPhraseSecurity(),
-));
-
-$starterMw = new StarterMiddleware($app);
-$moduleMw  = new ModuleMiddleware($app);
+// init container
+$container = new Container(
+    DEPLOYER_APP_DIR,
+    DEPLOYER_DIR,
+    DEPLOYER_DIR .'/deployer.yml'
+);
 
 // handle the request
-$config   = new Config('deployer.yml');
-$view     = new View(__DIR__ . '/view');
-$deployer = new RequestHandler($config, $view, $app);
-
-$deployer
-    ->addMiddleware($securityMw)
-    ->addMiddleware($starterMw)
-    ->addMiddleware($moduleMw)
-;
-
-$deployer->dispatch();
+$container['request_handler']->dispatch();

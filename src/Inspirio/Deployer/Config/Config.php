@@ -37,10 +37,35 @@ class Config
     }
 
     /**
-     * Returns config value or NULL when config does not exist..
+     * Returns the config value or the default value when config does not exist.
      *
      * @param string $key,...
+     *
      * @return mixed|null
+     */
+    public function getDefult($key, $defalt = null)
+    {
+        $keys   = func_get_args();
+        $config = $this->config;
+
+        foreach ($keys as $key) {
+            if (!isset($config[$key])) {
+                return $defalt;
+            }
+
+            $config = $config[$key];
+        }
+
+        return $config;
+    }
+
+    /**
+     * Returns config value.
+     *
+     * @param string $key,...
+     *
+     * @throws \OutOfBoundException
+     * @return mixed
      */
     public function get($key)
     {
@@ -49,7 +74,7 @@ class Config
 
         foreach ($keys as $key) {
             if (!isset($config[$key])) {
-                return null;
+                throw new \OutOfBoundException(sprintf('Config item \'%s\' does\'t exist.', implode('.', $keys)));
             }
 
             $config = $config[$key];

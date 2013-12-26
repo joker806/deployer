@@ -1,3 +1,5 @@
+app: Inspirio\Deployer\Application\LazyCms3
+
 security:
     # security modules can be disabled by setting its config to false (https : false)
     https:      { redirect: false, require: false }

@@ -4,8 +4,6 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\Middleware\MiddlewareInterface;
-use Inspirio\Deployer\Middleware\ModuleInterface;
-use Inspirio\Deployer\Module\Info\InfoModule;
 use Inspirio\Deployer\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,22 +35,7 @@ class RequestHandler
     /**
      * @var MiddlewareInterface[]
      */
-    private $middlewares;
-
-    /**
-     * Constructor.
-     *
-     * @param Config $config
-     * @param View $view
-     * @param ApplicationInterface $app
-     */
-    public function __construct(Config $config, View $view, ApplicationInterface $app)
-    {
-        $this->config      = $config;
-        $this->view        = $view;
-        $this->app         = $app;
-        $this->middlewares = array();
-    }
+    private $middlewares = array();
 
     /**
      * Registers security module.
@@ -196,29 +179,30 @@ class RequestHandler
         $action = $request->request->get('run');
         $request->request->remove('run');
 
-        $actionMethod = null;
+        $actionMethodName = $action . 'Action';
+        $actionMethod     = null;
 
         try {
-            $actionMethod = new \ReflectionMethod($module, $action . 'Action');
+            $actionMethod = new \ReflectionMethod($module, $actionMethodName);
         } catch (\ReflectionException $e) {
         }
 
         if (!$actionMethod || !$actionMethod->isPublic()) {
             $moduleName = get_class($module);
-            throw new \LogicException("Starter module '{$moduleName}' is missing 'startup' method");
+            throw new \LogicException("Starter module '{$moduleName}' is missing '{$actionMethodName}' method");
         }
 
-        $args     = $request->request->all();
-        $realArgs = array();
+        $requestArgs = $request->request->all();
+        $methodArgs  = array();
 
         foreach ($actionMethod->getParameters() as $i => $param) {
             $name = $param->getName();
 
-            if (array_key_exists($name, $args)) {
-                $realArgs[$i] = $args[$name];
+            if (array_key_exists($name, $requestArgs)) {
+                $methodArgs[$i] = $requestArgs[$name];
 
             } elseif ($param->isOptional()) {
-                $realArgs[$i] = $param->getDefaultValue();
+                $methodArgs[$i] = $param->getDefaultValue();
 
             } else {
                 $moduleName = get_class($this);
@@ -226,8 +210,8 @@ class RequestHandler
             }
         }
 
-        return new StreamedResponse(function () use ($actionMethod, $module, $realArgs) {
-            $actionMethod->invokeArgs($module, $realArgs);
+        return new StreamedResponse(function () use ($actionMethod, $module, $methodArgs) {
+            $actionMethod->invokeArgs($module, $methodArgs);
         });
     }
 }
