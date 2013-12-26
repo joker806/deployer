@@ -54,22 +54,6 @@ class RequestHandler
     }
 
     /**
-     * Handles the HTTP request.
-     *
-     * @return string
-     */
-    public function dispatch()
-    {
-        $request = Request::createFromGlobals();
-
-        $session = new Session();
-        $request->setSession($session);
-
-        $response = $this->handleRequest($request);
-        $response->send();
-    }
-
-    /**
      * Handles request.
      *
      * @param Request $request
@@ -78,7 +62,7 @@ class RequestHandler
      * @throws \LogicException
      * @throws \Exception
      */
-    private function handleRequest(Request $request)
+    public function handleRequest(Request $request)
     {
         if (
             !$request->isMethod('get') &&

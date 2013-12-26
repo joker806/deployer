@@ -1,6 +1,9 @@
 <?php
 use Inspirio\Deployer\Container;
+use Inspirio\Deployer\RequestHandler;
 use Symfony\Component\Debug\Debug;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 require_once __DIR__ . '/../env.php';
 
@@ -31,4 +34,13 @@ $container = new Container(
 );
 
 // handle the request
-$container['request_handler']->dispatch();
+$request = Request::createFromGlobals();
+
+$session = new Session();
+$request->setSession($session);
+
+/** @var $requestHandler RequestHandler */
+$requestHandler = $container['request_handler'];
+
+$response = $requestHandler->handleRequest($request);
+$response->send();
