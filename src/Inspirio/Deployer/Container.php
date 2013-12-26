@@ -11,8 +11,8 @@ class Container extends \Pimple
     public function __construct($appDir, $deployerDir, $configFile) {
 
         $this['dir.deployer'] = $appDir;
-        $this['dir.app']      = $deployerDir;
-        $this['dir.home']     = $this['dir.app'] .'/.deployer';
+        $this['dir.root']     = $deployerDir;
+        $this['dir.home']     = $this['dir.root'] .'/.deployer';
         $this['config.file']  = $configFile;
 
         $this['config'] = $this->share(function(Container $c) {
@@ -20,7 +20,7 @@ class Container extends \Pimple
         });
 
         $this['request_handler'] = $this->share(function(Container $c) {
-            $deployer = new RequestHandler();
+            $deployer = new RequestHandler($c['module_renderer'], $c['action_runner']);
 
             $deployer
                 ->addMiddleware($c['middleware.security'])
@@ -29,6 +29,14 @@ class Container extends \Pimple
             ;
 
             return $deployer;
+        });
+
+        $this['module_renderer'] = $this->share(function(Container $c) {
+            return new ModuleRenderer($c['template']);
+        });
+
+        $this['action_runner'] = $this->share(function(Container $c) {
+            return new ActionRunner();
         });
 
         $this['middleware.security'] = $this->share(
@@ -58,14 +66,14 @@ class Container extends \Pimple
             $config = $c['config'];
             $class  = $config->get('app');
 
-            return new $class();
+            return new $class($c['dir.root']);
         });
 
         $this['template'] = $this->share(function(Container $c) {
-            $loader = new \Twig_Loader_Filesystem($c['dir/deployer']);
+            $loader = new \Twig_Loader_Filesystem($c['dir.deployer']);
 
             $twig = new \Twig_Environment($loader, array(
-                'cache' => $c['home_dir'] .'/cache',
+                'cache' => $c['dir.home'] .'/cache',
             ));
 
             $twig->addGlobal('app', $c['app']);

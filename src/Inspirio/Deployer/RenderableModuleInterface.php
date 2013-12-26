@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Describes renderable module interface.
  *
  */
-interface RenderableModuleInterface
+interface RenderableModuleInterface extends ModuleInterface
 {
     /**
      * Renders user interface of the module.
