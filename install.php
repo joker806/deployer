@@ -1,17 +1,16 @@
 <?php
 require_once __DIR__ . '/env.php';
 
-if (!isCli()) {
-    header('Content-type: text/html; charset=utf-8');
-    echo <<<EOF
+header('Content-type: text/html; charset=utf-8');
+
+?>
 <style>header { text-align: center; margin-bottom: 40px; }</style>
 <header>
     <h1>Initializing Deployer</h1>
     <p>Please wait...</p>
 </header>
 <pre>
-EOF;
-}
+<?php
 
 try {
     writeln('Initializing required environment.');
@@ -19,16 +18,10 @@ try {
     downloadComposer();
     installDependencies();
     success();
-
     return 0;
 
 } catch (\Exception $e) {
-    $message = $e->getMessage();
-    $message = "\033[0;31m" . $message . "\033[0m";
-    array_unshift($args, $message);
-
-    call_user_func_array('writeln', $args);
-
+    writeln($e->getMessage(), 'red');
     return 1;
 }
 
@@ -62,7 +55,13 @@ function installDependencies() {
     copy(DEPLOYER_DIR .'/composer.json', DEPLOYER_HOME_DIR . '/composer.json');
     copy(DEPLOYER_DIR .'/composer.lock', DEPLOYER_HOME_DIR . '/composer.lock');
 
-    runCommand('php '. DEPLOYER_HOME_DIR .'/composer.phar install --no-interaction --no-dev --optimize-autoloader --working-dir '. DEPLOYER_HOME_DIR);
+    runCommand(
+        'php '. DEPLOYER_HOME_DIR .'/composer.phar install --no-interaction --no-dev --optimize-autoloader --working-dir '. DEPLOYER_HOME_DIR,
+        null,
+        array(
+            'COMPOSER_HOME' => DEPLOYER_HOME_DIR .'/.composer',
+        )
+    );
 }
 
 function fail($message = null)
@@ -84,30 +83,20 @@ function success($message = null)
     }
 
     writeln($message);
-
-    if (!isCli()) {
-        writeln('<script>setTimeout(function() { window.location.reload(); }, 2000);</script>');
-    }
 }
 
 
-function writeln($text)
+function writeln($text, $color = null)
 {
-    if (func_num_args() > 1) {
-        $text = call_user_func_array('sprintf', func_get_args());
+    if ($color !== null) {
+        $text = sprintf('<div style="color:%s">%s</div>', $color, $text);
     }
 
-    echo $text;
-
-    if (!isCli()) {
-        echo str_repeat(' ', 2048);
-    }
-
-    echo PHP_EOL;
+    echo $text . str_repeat(' ', 2048) . PHP_EOL;
     flush();
 }
 
-function runCommand($cmd, $input = null, &$output = null, &$error = null)
+function runCommand($cmd, $input = null, array $env = array())
 {
     $descriptors = array(
         0 => array('pipe', 'r'),
@@ -115,7 +104,9 @@ function runCommand($cmd, $input = null, &$output = null, &$error = null)
         2 => array('pipe', 'w'),
     );
 
-    $process = proc_open($cmd, $descriptors, $pipes, DEPLOYER_HOME_DIR);
+    writeln('> '.$cmd, 'blue');
+
+    $process = proc_open($cmd, $descriptors, $pipes, DEPLOYER_HOME_DIR, $env);
 
     if (!is_resource($process)) {
         fail('Can\'t run command \'%s\'', $process);
@@ -125,14 +116,19 @@ function runCommand($cmd, $input = null, &$output = null, &$error = null)
     fclose($pipes[0]);
 
     $output = stream_get_contents($pipes[1]);
+    writeln('< '. $output, 'gray');
     fclose($pipes[1]);
 
     $error = stream_get_contents($pipes[2]);
     fclose($pipes[2]);
 
-    return proc_close($process);
+    $result = proc_close($process);
+
+    if ($result > 0) {
+        writeln('< '. $error, 'red');
+        fail($error);
+    }
+
+    return $result;
 }
 
-function isCli() {
-    return php_sapi_name() === "cli";
-}
