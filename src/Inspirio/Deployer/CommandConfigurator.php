@@ -5,7 +5,7 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Command\Command;
 use Inspirio\Deployer\Command\MysqlCommand;
 use Inspirio\Deployer\Command\SubversionCommand;
-use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\Config;
 use Symfony\Component\Yaml\Yaml;
 
 class CommandConfigurator

@@ -1,7 +1,7 @@
 <?php
 namespace Inspirio\Deployer;
 
-use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\Config;
 use Inspirio\Deployer\Middleware\DeploymentMiddleware;
 use Inspirio\Deployer\Middleware\SecurityMiddleware;
 use Inspirio\Deployer\Middleware\StarterMiddleware;

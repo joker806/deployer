@@ -3,14 +3,14 @@ namespace Inspirio\Deployer\StarterModule;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Command\SubversionCommand;
-use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\Config;
 use Symfony\Component\HttpFoundation\Request;
 
 class SubversionCheckout extends AbstractStarterModule
 {
 
     /**
-     * @var Config
+     * @var \Inspirio\Deployer\Config
      */
     private $config;
 

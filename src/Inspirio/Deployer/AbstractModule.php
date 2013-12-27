@@ -1,7 +1,7 @@
 <?php
 namespace Inspirio\Deployer;
 
-use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\Config;
 use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractModule implements ModuleInterface

@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Config;
+namespace Inspirio\Deployer;
 
 use Symfony\Component\Yaml\Yaml;
 
