@@ -1,6 +1,8 @@
 <?php
 namespace Inspirio\Deployer;
 
+use Inspirio\Deployer\Config\Config;
+
 abstract class AbstractModule implements ModuleInterface
 {
     /**
@@ -48,5 +50,13 @@ abstract class AbstractModule implements ModuleInterface
         }
 
         return $this->title;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setConfig(Config $config)
+    {
+        // do nothing by default
     }
 }

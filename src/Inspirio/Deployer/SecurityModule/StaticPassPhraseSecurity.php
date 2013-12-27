@@ -2,10 +2,9 @@
 namespace Inspirio\Deployer\SecurityModule;
 
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\ConfigAwareModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class StaticPassPhraseSecurity extends AbstractPassPhraseSecurityModule implements ConfigAwareModuleInterface
+class StaticPassPhraseSecurity extends AbstractPassPhraseSecurityModule
 {
     protected $phrase = false;
 

@@ -2,11 +2,10 @@
 namespace Inspirio\Deployer\SecurityModule;
 
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\ConfigAwareModuleInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class HttpsSecurity extends AbstractSecurityModule implements ConfigAwareModuleInterface
+class HttpsSecurity extends AbstractSecurityModule
 {
     /**
      * @var bool

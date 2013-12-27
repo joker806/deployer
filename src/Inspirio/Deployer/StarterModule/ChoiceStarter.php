@@ -3,11 +3,10 @@ namespace Inspirio\Deployer\StarterModule;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\ConfigAwareModuleInterface;
 use Inspirio\Deployer\Exception\Request\NotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 
-class ChoiceStarter extends AbstractStarterModule implements ConfigAwareModuleInterface
+class ChoiceStarter extends AbstractStarterModule
 {
     /**
      * @var string
@@ -86,9 +85,7 @@ class ChoiceStarter extends AbstractStarterModule implements ConfigAwareModuleIn
     public function setConfig(Config $config)
     {
         foreach ($this->children as $child) {
-            if ($child instanceof ConfigAwareModuleInterface) {
-                $child->setConfig($config);
-            }
+            $child->setConfig($config);
         }
     }
 

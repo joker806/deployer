@@ -1,8 +1,8 @@
 <?php
 namespace Inspirio\Deployer;
 
+use Inspirio\Deployer\Config\Config;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 interface ModuleInterface
 {
@@ -19,6 +19,13 @@ interface ModuleInterface
      * @return string
      */
     public function getTitle();
+
+    /**
+     * Sets the module config.
+     *
+     * @param Config $config
+     */
+    public function setConfig(Config $config);
 
     /**
      * Renders user interface of the module.
