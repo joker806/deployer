@@ -1,7 +1,9 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
+use Inspirio\Deployer\DeploymentModule;
 use Inspirio\Deployer\Project;
+use Inspirio\Deployer\Starter;
 
 class LazyCms3 extends SymfonyApp
 {
@@ -13,13 +15,17 @@ class LazyCms3 extends SymfonyApp
         parent::__construct($rootPath);
 
         $this
-            ->addStarter(new \Inspirio\Deployer\Starter\SubversionCheckout())
+            ->addStarter(
+                Starter\ChoiceStarter::create('')
+                    ->addChild(new Starter\SubversionCheckout())
+                    ->addChild(new Starter\Dummy())
+            )
 
-            ->addModule(new \Inspirio\Deployer\Module\Info\InfoModule())
-            ->addModule(new \Inspirio\Deployer\Module\Deployment\DeploymentModule())
-            ->addModule(new \Inspirio\Deployer\Module\Configuration\ConfigurationModule())
-            ->addModule(new \Inspirio\Deployer\Module\Maintenance\MaintenanceModule())
-            ->addModule(new \Inspirio\Deployer\Module\Database\DatabaseModule())
+            ->addModule(new DeploymentModule\Info\InfoModule())
+            ->addModule(new DeploymentModule\Deployment\DeploymentModule())
+            ->addModule(new DeploymentModule\Configuration\ConfigurationModule())
+            ->addModule(new DeploymentModule\Maintenance\MaintenanceModule())
+            ->addModule(new DeploymentModule\Database\DatabaseModule())
         ;
     }
 

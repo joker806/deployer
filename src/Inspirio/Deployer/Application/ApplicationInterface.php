@@ -2,7 +2,7 @@
 namespace Inspirio\Deployer\Application;
 
 use Inspirio\Deployer\Starter\StarterModuleInterface;
-use Inspirio\Deployer\Module\ActionModuleInterface;
+use Inspirio\Deployer\DeploymentModule\DeploymentModuleInterface;
 use Inspirio\Deployer\ProjectInfoInterface;
 
 interface ApplicationInterface {
@@ -41,7 +41,7 @@ interface ApplicationInterface {
     /**
      * Returns application-registered modules.
      *
-     * @return ActionModuleInterface[]
+     * @return DeploymentModuleInterface[]
      */
     public function getModules();
 

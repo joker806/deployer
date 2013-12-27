@@ -1,7 +1,6 @@
 <?php
 namespace Inspirio\Deployer\Config;
 
-
 use Symfony\Component\Yaml\Yaml;
 
 class Config
@@ -43,7 +42,7 @@ class Config
      *
      * @return mixed|null
      */
-    public function getDefult($key, $defalt = null)
+    public function getDefault($key, $defalt = null)
     {
         $keys   = func_get_args();
         $config = $this->config;
