@@ -9,14 +9,14 @@ class ActionRunner {
     /**
      * Runs module action.
      *
-     * @param RunnableModuleInterface $module
-     * @param Request                 $request
+     * @param ModuleInterface $module
+     * @param Request         $request
      *
      * @throws \LogicException
      * @throws \InvalidArgumentException
      * @return StreamedResponse
      */
-    public function runAction(RunnableModuleInterface $module, Request $request)
+    public function runAction(ModuleInterface $module, Request $request)
     {
         if (!$request->request->has('run')) {
             throw new \InvalidArgumentException("Missing 'run' parameter data");

@@ -102,10 +102,6 @@ class RequestHandler
                 return new Response($content);
 
             } else {
-                if (!$result instanceof RunnableModuleInterface) {
-                    return new Response("POST method no allowed for module '{$moduleName}'.", 405);
-                }
-
                 return $this->actionRunner->runAction($result, $request);
             }
         }
