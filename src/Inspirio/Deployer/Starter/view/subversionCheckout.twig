@@ -5,28 +5,24 @@
         <label class="control-label" for="checkout-repoName">Repository</label>
         <div class="controls">
             <select id="checkout-repoName" name="repoName" required="required">
-                <?php
-                    foreach($repos as $repo) {
-                        $selected = ($repo == $repoName) ? 'selected="selected"' : '';
-                        echo "<option value=\"{$repo}\" {$selected}>{$repo}</option>";
-                    }
-                ?>
+                {% for repo in repos %}
+                    <option value="{{ repo }}" {% if repo == repoName %}selected{% endif %}>{{ repo }}</option>
+                {% endfor %}
             </select>
         </div>
     </div>
 
-
     <div class="control-group">
         <label class="control-label" for="checkout-repo">Path</label>
         <div class="controls">
-            <input id="checkout-repo" class="input-xlarge" type="text" name="repoPath" required="required" value="<?php echo $repoPath; ?>" />
+            <input id="checkout-repo" class="input-xlarge" type="text" name="repoPath" required="required" value="{{ repoPath }}" />
         </div>
     </div>
 
     <div class="control-group">
         <label class="control-label" for="checkout-revision">Revision</label>
         <div class="controls">
-            <input id="checkout-revision" class="input-small" type="text" name="revision" required="required" value="<?php echo $revision; ?>" />
+            <input id="checkout-revision" class="input-small" type="text" name="revision" required="required" value="{{ revision }}" />
         </div>
     </div>
 

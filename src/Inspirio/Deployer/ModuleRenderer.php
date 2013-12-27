@@ -1,8 +1,8 @@
 <?php
 namespace Inspirio\Deployer;
 
+use Inspirio\Deployer\Middleware\MiddlewareInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class ModuleRenderer {
 
@@ -10,6 +10,11 @@ class ModuleRenderer {
      * @var \Twig_Environment
      */
     private $twig;
+
+    /**
+     * @var Request|null
+     */
+    private $request = null;
 
     /**
      * Constructor.
@@ -24,34 +29,66 @@ class ModuleRenderer {
     /**
      * Renders the module.
      *
-     * @param RenderableModuleInterface $module
      * @param Request                   $request
+     * @param MiddlewareInterface       $middleware
+     * @param RenderableModuleInterface $module
      *
-     * @return Response
+     * @throws \RuntimeException
+     * @return string
      */
-    public function renderModule(RenderableModuleInterface $module, Request $request)
+    public function renderModule(Request $request, MiddlewareInterface $middleware, RenderableModuleInterface $module)
     {
-        $content = $module->render($request);
+        $this->request = $request;
 
-        // complete response
-        if ($content instanceof Response) {
-            return $content;
+        $template = $middleware->getTemplateLayout();
+
+        $data['module']  = $module;
+        $data['request'] = $request;
+
+        $content = $this->twig->render($template, $data);
+
+        $this->request = null;
+
+        return $content;
+    }
+
+    /**
+     * Renders the module.
+     *
+     * @param RenderableModuleInterface $module
+     *
+     * @throws \RuntimeException
+     * @return string
+     */
+    public function subRenderModule(RenderableModuleInterface $module)
+    {
+        if ($this->request === null) {
+            throw new \RuntimeException("Can't sub-render module {$module}, call the renderModule method first");
         }
 
+        $data = $module->render($this->request);
+
         // rendered content returned
-        if (is_scalar($content)) {
-            return new Response($content);
+        if (is_scalar($data)) {
+            return $data;
+        }
+
+        // invalid content
+        if (!is_array($data)) {
+            $hint = is_object($data) ? get_class($data) : gettype($data);
+            throw new \RuntimeException("Module {$module->getName()} render returned {$hint}, string or array expected.");
         }
 
         // view data returned
-        $content['module']  = $module;
-        $content['request'] = $request;
+        $data['module']  = $module;
+        $data['request'] = $this->request;
 
-        $className = get_class($module);
-        $className = substr($className, strrpos($className, '\\') + 1);
-        $template  = 'starter/' . lcfirst($className) . '.html.php';
+        $classRefl = new \ReflectionObject($module);
+        $classDir  = dirname($classRefl->getFileName());
 
-        $content = $this->twig->render($template, $content);
-        return new Response($content);
+        $template = lcfirst(implode('', array_map('ucfirst', explode('_', $module->getName()))));
+        $template  = $classDir .'/view/'. $template .'.twig';
+
+        return $this->twig->render($template, $data);
     }
 }

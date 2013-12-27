@@ -1,0 +1,9 @@
+<ul class="nav nav-tabs">
+    {% for child in children %}
+        <li class="{{ child == activeChildren ? 'active' : '' }}"><a href="" data-toggle="tab">{{ child.title }}</a></li>
+    {% endfor %}
+</ul>
+
+<div class="tab-content">
+    {{ render_module(activeChildren) }}
+</div>

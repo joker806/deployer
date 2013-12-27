@@ -1,6 +1,7 @@
 <?php
 namespace Inspirio\Deployer\Middleware;
 
+use Inspirio\Deployer\Security\SecurityModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,6 +20,19 @@ class SecurityMiddleware implements MiddlewareInterface
     function __construct(array $modules)
     {
         $this->modules = $modules;
+    }
+
+    /**
+     * Registers the security module.
+     *
+     * @param SecurityModuleInterface $module
+     *
+     * @return $this
+     */
+    public function registerModule(SecurityModuleInterface $module)
+    {
+        $this->modules[] = $module;
+        return $this;
     }
 
     /**
@@ -43,5 +57,13 @@ class SecurityMiddleware implements MiddlewareInterface
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTemplateLayout()
+    {
+        return 'securityLayout.twig';
     }
 }

@@ -3,9 +3,8 @@ namespace Inspirio\Deployer\Middleware;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
-class ModuleMiddleware implements MiddlewareInterface
+class DeploymentMiddleware implements MiddlewareInterface
 {
     /**
      * @var ApplicationInterface
@@ -37,12 +36,20 @@ class ModuleMiddleware implements MiddlewareInterface
             }
 
             if (!$module->isEnabled()) {
-                continue;
+                return null;
             }
 
             return $module;
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTemplateLayout()
+    {
+        return 'deploymentLayout.twig';
     }
 }

@@ -4,7 +4,6 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Middleware\MiddlewareInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Web request handler.
@@ -13,7 +12,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
  */
 class RequestHandler
 {
-
     /**
      * @var ModuleRenderer
      */
@@ -104,7 +102,8 @@ class RequestHandler
                     return new Response("GET method no allowed for module '{$moduleName}'.", 405);
                 }
 
-                return $this->moduleRenderer->renderModule($result, $request);
+                $content = $this->moduleRenderer->renderModule($request, $middleware, $result);
+                return new Response($content);
 
             } else {
                 if (!$result instanceof RunnableModuleInterface) {

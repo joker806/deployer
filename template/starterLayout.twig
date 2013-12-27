@@ -1,0 +1,12 @@
+{% extends 'page.twig' %}
+{% block bodyClass %}{{ parent() ~' starter-module' }}{% endblock %}
+
+{% block pageContent %}
+    <div class="container">
+        <h1>Project initialization</h1>
+
+        {{ render_module(module) }}
+
+        <div id="console-output"></div>
+    </div>
+{% endblock %}

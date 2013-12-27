@@ -2,7 +2,7 @@
 namespace Inspirio\Deployer;
 
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Middleware\ModuleMiddleware;
+use Inspirio\Deployer\Middleware\DeploymentMiddleware;
 use Inspirio\Deployer\Middleware\SecurityMiddleware;
 use Inspirio\Deployer\Middleware\StarterMiddleware;
 
@@ -10,9 +10,10 @@ class Container extends \Pimple
 {
     public function __construct($appDir, $deployerDir, $configFile) {
 
-        $this['dir.deployer'] = $appDir;
-        $this['dir.root']     = $deployerDir;
+        $this['dir.deployer'] = $deployerDir;
+        $this['dir.root']     = $appDir;
         $this['dir.home']     = $this['dir.root'] .'/.deployer';
+        $this['dir.template'] = $this['dir.deployer'] .'/template';
         $this['config.file']  = $configFile;
 
         $this['config'] = $this->share(function(Container $c) {
@@ -32,22 +33,30 @@ class Container extends \Pimple
         });
 
         $this['module_renderer'] = $this->share(function(Container $c) {
-            return new ModuleRenderer($c['template']);
+            /** @var $twig \Twig_Environment */
+            $twig = $c['twig'];
+
+            $renderer = new ModuleRenderer($twig);
+            $twig->addFunction(new \Twig_SimpleFunction(
+                    'render_module',
+                    array($renderer, 'subRenderModule'),
+                    array('is_safe' => array('all')))
+            );
+
+            return $renderer;
         });
 
         $this['action_runner'] = $this->share(function(Container $c) {
             return new ActionRunner();
         });
 
-        $this['middleware.security'] = $this->share(
-            function () {
-                return new SecurityMiddleware(array(
-                    new Security\IpFilterSecurity(),
-                    new Security\HttpsSecurity(),
-                    new Security\StaticPassPhraseSecurity(),
-                ));
-            }
-        );
+        $this['middleware.security'] = $this->share(function () {
+            return new SecurityMiddleware(array(
+                new Security\IpFilterSecurity(),
+                new Security\HttpsSecurity(),
+                new Security\StaticPassPhraseSecurity(),
+            ));
+        });
 
         $this['middleware.starter'] = $this->share(
             function (Container $c) {
@@ -57,7 +66,7 @@ class Container extends \Pimple
 
         $this['middleware.module'] = $this->share(
             function (Container $c) {
-                return new ModuleMiddleware($c['app']);
+                return new DeploymentMiddleware($c['app']);
             }
         );
 
@@ -69,11 +78,16 @@ class Container extends \Pimple
             return new $class($c['dir.root']);
         });
 
-        $this['template'] = $this->share(function(Container $c) {
-            $loader = new \Twig_Loader_Filesystem($c['dir.deployer']);
+        $this['twig'] = $this->share(function(Container $c) {
+            $loader = new \Twig_Loader_Filesystem(array(
+                '/', // TODO temporary hack to allow absolute template paths
+                $c['dir.template']
+            ));
 
             $twig = new \Twig_Environment($loader, array(
-                'cache' => $c['dir.home'] .'/cache',
+                'cache'            => $c['dir.home'] . '/cache',
+                'debug'            => true,
+                'strict_valiables' => true,
             ));
 
             $twig->addGlobal('app', $c['app']);

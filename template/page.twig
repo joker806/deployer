@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Project deployer{{ app.projectInfo.name ? ' - '~ app.projectInfo.name : '' }}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    {% block stylesheet %}
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet/less" href="css/app.less">
+    {% endblock %}
+</head>
+
+<body class="{% block bodyClass %}{% endblock %}">
+	{% block pageContent %}{% endblock %}
+
+    {% block javascript %}
+        <script src="js/less.min.js"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/app.js"></script>
+    {% endblock %}
+</body>
+</html>

@@ -45,4 +45,12 @@ class StarterMiddleware implements MiddlewareInterface
 
         return null;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTemplateLayout()
+    {
+        return 'starterLayout.twig';
+    }
 }
