@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Starter;
+namespace Inspirio\Deployer\StarterModule;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
