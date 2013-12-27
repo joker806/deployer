@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Security;
+namespace Inspirio\Deployer\SecurityModule;
 
 use Inspirio\Deployer\RenderableModuleInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;

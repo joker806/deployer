@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Security;
+namespace Inspirio\Deployer\SecurityModule;
 
 use Inspirio\Deployer\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;

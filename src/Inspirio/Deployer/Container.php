@@ -52,9 +52,9 @@ class Container extends \Pimple
 
         $this['middleware.security'] = $this->share(function () {
             return new SecurityMiddleware(array(
-                new Security\IpFilterSecurity(),
-                new Security\HttpsSecurity(),
-                new Security\StaticPassPhraseSecurity(),
+                new SecurityModule\IpFilterSecurity(),
+                new SecurityModule\HttpsSecurity(),
+                new SecurityModule\StaticPassPhraseSecurity(),
             ));
         });
 

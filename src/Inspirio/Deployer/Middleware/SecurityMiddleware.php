@@ -1,7 +1,7 @@
 <?php
 namespace Inspirio\Deployer\Middleware;
 
-use Inspirio\Deployer\Security\SecurityModuleInterface;
+use Inspirio\Deployer\SecurityModule\SecurityModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
