@@ -1,7 +1,7 @@
 <?php
 namespace Inspirio\Deployer\DeploymentModule\Deployment;
 
-use Inspirio\Deployer\DeploymentModule\AbstractDeploymentModule;
+use Inspirio\Deployer\Module\Deployment\AbstractDeploymentModule;
 use Inspirio\Deployer\Command\ComposerCommand;
 use Inspirio\Deployer\Command\SubversionCommand;
 use Inspirio\Deployer\Command\SymfonyCommand;

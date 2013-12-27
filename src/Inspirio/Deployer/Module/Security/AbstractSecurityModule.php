@@ -1,7 +1,7 @@
 <?php
-namespace Inspirio\Deployer\SecurityModule;
+namespace Inspirio\Deployer\Module\Security;
 
-use Inspirio\Deployer\AbstractModule;
+use Inspirio\Deployer\Module\AbstractModule;
 
 abstract class AbstractSecurityModule extends AbstractModule implements SecurityModuleInterface
 {

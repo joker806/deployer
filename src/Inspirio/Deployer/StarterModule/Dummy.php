@@ -2,6 +2,7 @@
 namespace Inspirio\Deployer\StarterModule;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
+use Inspirio\Deployer\Module\Starter\AbstractStarterModule;
 use Symfony\Component\HttpFoundation\Request;
 
 class Dummy extends AbstractStarterModule

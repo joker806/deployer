@@ -1,7 +1,8 @@
 <?php
 namespace Inspirio\Deployer;
 
-use Inspirio\Deployer\Middleware\MiddlewareInterface;
+use Inspirio\Deployer\Module\ModuleBagInterface;
+use Inspirio\Deployer\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class ModuleRenderer {
@@ -29,18 +30,18 @@ class ModuleRenderer {
     /**
      * Renders the module.
      *
-     * @param Request             $request
-     * @param MiddlewareInterface $middleware
-     * @param ModuleInterface     $module
+     * @param Request            $request
+     * @param ModuleBagInterface $bag
+     * @param ModuleInterface    $module
      *
      * @throws \RuntimeException
      * @return string
      */
-    public function renderModule(Request $request, MiddlewareInterface $middleware, ModuleInterface $module)
+    public function renderModule(Request $request, ModuleBagInterface $bag, ModuleInterface $module)
     {
         $this->request = $request;
 
-        $template = $middleware->getTemplateLayout();
+        $template = $bag->getTemplateLayout();
 
         $data['module']  = $module;
         $data['request'] = $request;

@@ -14,17 +14,17 @@ class LazyCms3 extends SymfonyApp
         parent::__construct($rootPath);
 
         $this
-            ->addStarter(
+            ->addStarterModule(
                 StarterModule\ChoiceStarter::create('')
                     ->addChild(new StarterModule\SubversionCheckout())
                     ->addChild(new StarterModule\Dummy())
             )
 
-            ->addModule(new DeploymentModule\Info\InfoModule())
-            ->addModule(new DeploymentModule\Deployment\DeploymentModule())
-            ->addModule(new DeploymentModule\Configuration\ConfigurationModule())
-            ->addModule(new DeploymentModule\Maintenance\MaintenanceModule())
-            ->addModule(new DeploymentModule\Database\DatabaseModule())
+            ->addDeploymentModule(new DeploymentModule\Info\InfoModule())
+            ->addDeploymentModule(new DeploymentModule\Deployment\DeploymentModule())
+            ->addDeploymentModule(new DeploymentModule\Configuration\ConfigurationModule())
+            ->addDeploymentModule(new DeploymentModule\Maintenance\MaintenanceModule())
+            ->addDeploymentModule(new DeploymentModule\Database\DatabaseModule())
         ;
     }
 

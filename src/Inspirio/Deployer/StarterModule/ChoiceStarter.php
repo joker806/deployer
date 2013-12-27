@@ -3,6 +3,8 @@ namespace Inspirio\Deployer\StarterModule;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config;
+use Inspirio\Deployer\Module\Starter\AbstractStarterModule;
+use Inspirio\Deployer\Module\Starter\StarterModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class ChoiceStarter extends AbstractStarterModule

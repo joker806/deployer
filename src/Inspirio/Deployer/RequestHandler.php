@@ -1,7 +1,9 @@
 <?php
 namespace Inspirio\Deployer;
 
-use Inspirio\Deployer\Middleware\MiddlewareInterface;
+use Inspirio\Deployer\Module\ModuleBagInterface;
+use Inspirio\Deployer\Module\ModuleInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,9 +25,9 @@ class RequestHandler
     private $actionRunner;
 
     /**
-     * @var MiddlewareInterface[]
+     * @var ModuleBagInterface[]
      */
-    private $middlewares = array();
+    private $moduleBags = array();
 
     /**
      * Constructor.
@@ -40,14 +42,15 @@ class RequestHandler
     }
 
     /**
-     * Registers security module.
+     * Adds the module bag.
      *
-     * @param MiddlewareInterface $middleware
+     * @param ModuleBagInterface $bag
+     *
      * @return $this
      */
-    public function addMiddleware(MiddlewareInterface $middleware)
+    public function addModuleBag(ModuleBagInterface $bag)
     {
-        $this->middlewares[] = $middleware;
+        $this->moduleBags[] = $bag;
         return $this;
     }
 
@@ -75,34 +78,44 @@ class RequestHandler
 
         $moduleName = $request->query->get('module');
 
-        foreach ($this->middlewares as $middleware) {
-            $result = $middleware->interceptRequest($request, $moduleName);
+        foreach ($this->moduleBags as $bag) {
+            $module = $bag->pickModule($request, $moduleName);
 
-            if ($result === null) {
+            // no module from the current bag
+            // try another bag
+            if ($module === null) {
                 continue;
             }
 
-            if ($result instanceof Response) {
-                return $result;
+            // no module, but specific response
+            // return the response
+            if ($module instanceof Response) {
+                return $module;
             }
 
-            if (!$result instanceof ModuleInterface) {
-                $hint = is_object($result) ? get_class($result) : gettype($result);
+            if (!$module instanceof ModuleInterface) {
+                $hint = is_object($module) ? get_class($module) : gettype($module);
                 throw new \LogicException(
-                    "Invalid middleware result type. " .
+                    "Invalid ModuleBag::pickModule() result type. " .
                     "Expected instance of \\Symfony\\Component\\HttpFoundation\\Response, " .
-                    "\\Inspirio\\Deployer\\Middleware\\ModuleInterface or NULL, got {$hint}"
+                    "\\Inspirio\\Deployer\\Module\\ModuleInterface or NULL, got {$hint}"
                 );
             }
 
-            $request->attributes->set('module', $result);
+            // found module does not match requested module (or no specific module requested)
+            // redirect to found module
+            if ($module->getName() !== $moduleName) {
+                return new RedirectResponse('/?module='. $module->getName());
+            }
+
+            $request->attributes->set('module', $module);
 
             if ($request->isMethod('get')) {
-                $content = $this->moduleRenderer->renderModule($request, $middleware, $result);
+                $content = $this->moduleRenderer->renderModule($request, $bag, $module);
                 return new Response($content);
 
             } else {
-                return $this->actionRunner->runAction($result, $request);
+                return $this->actionRunner->runAction($module, $request);
             }
         }
 

@@ -1,8 +1,8 @@
 <?php
-namespace Inspirio\Deployer\StarterModule;
+namespace Inspirio\Deployer\Module\Starter;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
-use Inspirio\Deployer\ModuleInterface;
+use Inspirio\Deployer\Module\ModuleInterface;
 
 /**
  * Project starter module interface.

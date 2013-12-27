@@ -4,6 +4,7 @@ namespace Inspirio\Deployer\StarterModule;
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Command\SubversionCommand;
 use Inspirio\Deployer\Config;
+use Inspirio\Deployer\Module\Starter\AbstractStarterModule;
 use Symfony\Component\HttpFoundation\Request;
 
 class SubversionCheckout extends AbstractStarterModule
@@ -49,7 +50,7 @@ class SubversionCheckout extends AbstractStarterModule
     /**
      * {@inheritdoc}
      */
-    public function startupAction(array $data)
+    public function runCheckout(array $data)
     {
 //        $repoName = $data['']
 //

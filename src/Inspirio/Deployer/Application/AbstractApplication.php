@@ -1,8 +1,10 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
-use Inspirio\Deployer\StarterModule\StarterModuleInterface;
-use Inspirio\Deployer\DeploymentModule\DeploymentModuleInterface;
+use Inspirio\Deployer\Module\Deployment\DeploymentModuleBag;
+use Inspirio\Deployer\Module\Starter\StarterModuleBag;
+use Inspirio\Deployer\Module\Starter\StarterModuleInterface;
+use Inspirio\Deployer\Module\Deployment\DeploymentModuleInterface;
 
 abstract class AbstractApplication implements ApplicationInterface
 {
@@ -12,21 +14,23 @@ abstract class AbstractApplication implements ApplicationInterface
     private $rootPath;
 
     /**
-     * @var StarterModuleInterface[]
+     * @var StarterModuleBag
      */
-    private $starters;
+    private $starterModules;
 
     /**
-     * @var DeploymentModuleInterface[]
+     * @var DeploymentModuleBag
      */
-    private $modules;
+    private $deploymentModules;
 
     /**
      * {@inheritdoc}
      */
     public function __construct($rootPath)
     {
-        $this->rootPath = $rootPath;
+        $this->rootPath          = $rootPath;
+        $this->starterModules    = new StarterModuleBag($this);
+        $this->deploymentModules = new DeploymentModuleBag($this);
     }
 
     /**
@@ -50,20 +54,20 @@ abstract class AbstractApplication implements ApplicationInterface
      * @param StarterModuleInterface $starter
      * @return $this
      */
-    public function addStarter(StarterModuleInterface $starter)
+    public function addStarterModule(StarterModuleInterface $starter)
     {
-        $this->starters[] = $starter;
+        $this->starterModules->addModule($starter);
         return $this;
     }
 
     /**
      * Returns registered starter modules.
      *
-     * @return StarterModuleInterface
+     * @return StarterModuleBag
      */
-    public function getStarters()
+    public function getStarterModules()
     {
-        return $this->starters;
+        return $this->starterModules;
     }
 
     /**
@@ -73,19 +77,19 @@ abstract class AbstractApplication implements ApplicationInterface
      *
      * @return $this
      */
-    public function addModule(DeploymentModuleInterface $module)
+    public function addDeploymentModule(DeploymentModuleInterface $module)
     {
-        $this->modules[] = $module;
+        $this->deploymentModules->addModule($module);
         return $this;
     }
 
     /**
      * Returns registered action modules.
      *
-     * @return DeploymentModuleInterface
+     * @return DeploymentModuleBag
      */
-    public function getModules()
+    public function getDeploymentModules()
     {
-        return $this->modules;
+        return $this->deploymentModules;
     }
 }

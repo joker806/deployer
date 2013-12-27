@@ -2,6 +2,7 @@
 namespace Inspirio\Deployer\SecurityModule;
 
 use Inspirio\Deployer\Config;
+use Inspirio\Deployer\Module\Security\AbstractSecurityModule;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 

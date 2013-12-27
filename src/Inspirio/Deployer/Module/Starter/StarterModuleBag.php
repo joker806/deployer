@@ -1,11 +1,15 @@
 <?php
-namespace Inspirio\Deployer\Middleware;
+namespace Inspirio\Deployer\Module\Starter;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
+use Inspirio\Deployer\Module\AbstractModuleBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class StarterMiddleware implements MiddlewareInterface
+/**
+ * @property StarterModuleInterface[] $modules
+ */
+class StarterModuleBag extends AbstractModuleBag
 {
     /**
      * @var ApplicationInterface
@@ -25,18 +29,14 @@ class StarterMiddleware implements MiddlewareInterface
     /**
      * {@inheritdoc}
      */
-    public function interceptRequest(Request $request, $moduleName = null)
+    public function pickModule(Request $request, $moduleName = null)
     {
-        foreach ($this->app->getStarters() as $module) {
+        foreach ($this->modules as $module) {
             if ($module->isStarted($this->app)) {
                 continue;
             }
 
-            if ($moduleName === null) {
-                return new ModuleRedirectResponse($module->getName());
-            }
-
-            if ($module->getName() === $moduleName) {
+            if ($moduleName === null || $moduleName === $module->getName()) {
                 return $module;
             }
 

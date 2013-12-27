@@ -1,10 +1,11 @@
 <?php
 namespace Inspirio\Deployer;
 
+use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config;
-use Inspirio\Deployer\Middleware\DeploymentMiddleware;
-use Inspirio\Deployer\Middleware\SecurityMiddleware;
-use Inspirio\Deployer\Middleware\StarterMiddleware;
+use Inspirio\Deployer\Module\Deployment\DeploymentModuleBag;
+use Inspirio\Deployer\Module\Security\SecurityModuleBag;
+use Inspirio\Deployer\Module\Starter\StarterModuleBag;
 
 class Container extends \Pimple
 {
@@ -21,15 +22,17 @@ class Container extends \Pimple
         });
 
         $this['request_handler'] = $this->share(function(Container $c) {
-            $deployer = new RequestHandler($c['module_renderer'], $c['action_runner']);
+            /** @var $app ApplicationInterface */
+            $handler = new RequestHandler($c['module_renderer'], $c['action_runner']);
+            $app     = $c['app'];
 
-            $deployer
-                ->addMiddleware($c['middleware.security'])
-                ->addMiddleware($c['middleware.starter'])
-                ->addMiddleware($c['middleware.module'])
+            $handler
+                ->addModuleBag($c['module.security'])
+                ->addModuleBag($app->getStarterModules())
+                ->addModuleBag($app->getDeploymentModules())
             ;
 
-            return $deployer;
+            return $handler;
         });
 
         $this['module_renderer'] = $this->share(function(Container $c) {
@@ -50,25 +53,17 @@ class Container extends \Pimple
             return new ActionRunner();
         });
 
-        $this['middleware.security'] = $this->share(function () {
-            return new SecurityMiddleware(array(
-                new SecurityModule\IpFilterSecurity(),
-                new SecurityModule\HttpsSecurity(),
-                new SecurityModule\StaticPassPhraseSecurity(),
-            ));
+        $this['module.security'] = $this->share(function () {
+            $bag = new SecurityModuleBag();
+
+            $bag
+                ->addModule(new SecurityModule\IpFilterSecurity())
+                ->addModule(new SecurityModule\HttpsSecurity())
+                ->addModule(new SecurityModule\StaticPassPhraseSecurity())
+            ;
+
+            return $bag;
         });
-
-        $this['middleware.starter'] = $this->share(
-            function (Container $c) {
-                return new StarterMiddleware($c['app']);
-            }
-        );
-
-        $this['middleware.module'] = $this->share(
-            function (Container $c) {
-                return new DeploymentMiddleware($c['app']);
-            }
-        );
 
         $this['app'] = $this->share(function(Container $c) {
             /** @var $config Config */

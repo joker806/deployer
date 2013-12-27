@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer\Middleware;
+namespace Inspirio\Deployer\Module;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 

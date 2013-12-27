@@ -1,10 +1,14 @@
 <?php
-namespace Inspirio\Deployer\Middleware;
+namespace Inspirio\Deployer\Module\Deployment;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
+use Inspirio\Deployer\Module\AbstractModuleBag;
 use Symfony\Component\HttpFoundation\Request;
 
-class DeploymentMiddleware implements MiddlewareInterface
+/**
+ * @property DeploymentModuleInterface[] $modules
+ */
+class DeploymentModuleBag extends AbstractModuleBag
 {
     /**
      * @var ApplicationInterface
@@ -24,13 +28,13 @@ class DeploymentMiddleware implements MiddlewareInterface
     /**
      * {@inheritdoc}
      */
-    public function interceptRequest(Request $request, $moduleName = null)
+    public function pickModule(Request $request, $moduleName = null)
     {
         if ($moduleName === null) {
-            return new ModuleRedirectResponse($this->app->getHomeModuleName());
+            $moduleName = $this->app->getHomeModuleName();
         }
 
-        foreach ($this->app->getModules() as $module) {
+        foreach ($this->app->getDeploymentModules() as $module) {
             if ($module->getName() !== $moduleName) {
                 continue;
             }

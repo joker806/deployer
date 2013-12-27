@@ -1,7 +1,7 @@
 <?php
 namespace Inspirio\Deployer\DeploymentModule\Configuration;
 
-use Inspirio\Deployer\DeploymentModule\AbstractDeploymentModule;
+use Inspirio\Deployer\Module\Deployment\AbstractDeploymentModule;
 use Inspirio\Deployer\Command\SymfonyCommand;
 use Symfony\Component\Yaml\Yaml;
 

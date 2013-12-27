@@ -1,5 +1,5 @@
 <?php
-namespace Inspirio\Deployer;
+namespace Inspirio\Deployer\Module;
 
 use Inspirio\Deployer\Config;
 use Symfony\Component\HttpFoundation\Request;

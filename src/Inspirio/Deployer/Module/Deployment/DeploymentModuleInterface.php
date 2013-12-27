@@ -1,7 +1,7 @@
 <?php
-namespace Inspirio\Deployer\DeploymentModule;
+namespace Inspirio\Deployer\Module\Deployment;
 
-use Inspirio\Deployer\ModuleInterface;
+use Inspirio\Deployer\Module\ModuleInterface;
 
 /**
  * Action interface.

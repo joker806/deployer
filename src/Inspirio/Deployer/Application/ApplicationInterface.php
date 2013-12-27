@@ -1,8 +1,8 @@
 <?php
 namespace Inspirio\Deployer\Application;
 
-use Inspirio\Deployer\StarterModule\StarterModuleInterface;
-use Inspirio\Deployer\DeploymentModule\DeploymentModuleInterface;
+use Inspirio\Deployer\Module\Starter\StarterModuleInterface;
+use Inspirio\Deployer\Module\Deployment\DeploymentModuleInterface;
 
 interface ApplicationInterface {
 
@@ -35,14 +35,14 @@ interface ApplicationInterface {
      *
      * @return StarterModuleInterface[]
      */
-    public function getStarters();
+    public function getStarterModules();
 
     /**
      * Returns application-registered modules.
      *
      * @return DeploymentModuleInterface[]
      */
-    public function getModules();
+    public function getDeploymentModules();
 
     /**
      * Returns name of home module.

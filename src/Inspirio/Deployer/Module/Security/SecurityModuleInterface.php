@@ -1,7 +1,7 @@
 <?php
-namespace Inspirio\Deployer\SecurityModule;
+namespace Inspirio\Deployer\Module\Security;
 
-use Inspirio\Deployer\ModuleInterface;
+use Inspirio\Deployer\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 interface SecurityModuleInterface extends ModuleInterface

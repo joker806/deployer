@@ -1,7 +1,7 @@
 <?php
 namespace Inspirio\Deployer\DeploymentModule\LogBrowser;
 
-use Inspirio\Deployer\DeploymentModule\AbstractDeploymentModule;
+use Inspirio\Deployer\Module\Deployment\AbstractDeploymentModule;
 
 class LogBrowserModule extends AbstractDeploymentModule
 {
