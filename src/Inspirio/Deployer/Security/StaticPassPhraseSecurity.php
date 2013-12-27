@@ -2,11 +2,10 @@
 namespace Inspirio\Deployer\Security;
 
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Config\ConfigAware;
+use Inspirio\Deployer\ConfigAwareModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
-class StaticPassPhraseSecurity extends PassPhraseSecurity
+class StaticPassPhraseSecurity extends AbstractPassPhraseSecurityModule implements ConfigAwareModuleInterface
 {
     protected $phrase = false;
 
@@ -15,8 +14,6 @@ class StaticPassPhraseSecurity extends PassPhraseSecurity
      */
     public function setConfig(Config $config)
     {
-        parent::setConfig($config);
-
         $phrase = $config->get('security', 'passPhrase');
 
         if ($phrase === false) {
@@ -29,6 +26,15 @@ class StaticPassPhraseSecurity extends PassPhraseSecurity
 
         $this->phrase = $phrase;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function render(Request $request)
+    {
+        return array();
+    }
+
 
     /**
      * {@inheritdoc}

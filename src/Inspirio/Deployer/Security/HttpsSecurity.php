@@ -2,11 +2,11 @@
 namespace Inspirio\Deployer\Security;
 
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Config\ConfigAware;
+use Inspirio\Deployer\ConfigAwareModuleInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
-class HttpsSecurity implements SecurityModuleInterface, ConfigAware
+class HttpsSecurity extends AbstractSecurityModule implements ConfigAwareModuleInterface
 {
     /**
      * @var bool
@@ -44,21 +44,24 @@ class HttpsSecurity implements SecurityModuleInterface, ConfigAware
         if ($https) {
             $this->require = true;
         }
+
+        $this->configLoaded = true;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function authorize(Request $request)
+    public function isAuthorized(Request $request)
     {
         if (!$request->isSecure() && $this->redirect) {
             if (($qs = $request->getQueryString()) !== null) {
                 $qs = '?'.$qs;
             }
 
-            return new Response('301 Moved Permanently', 301, array(
-                'Location' => 'https://'.$request->getHttpHost().$request->getBaseUrl().$this->$request().$qs
-            ));
+            return new RedirectResponse(
+                'https://' . $request->getHttpHost() . $request->getBaseUrl() . $request->getPathInfo() . $qs,
+                301
+            );
         }
 
         if (!$request->isSecure() && $this->require) {

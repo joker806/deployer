@@ -1,12 +1,10 @@
 <?php
 namespace Inspirio\Deployer\Security;
 
-
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Config\ConfigAware;
 use Symfony\Component\HttpFoundation\Request;
 
-class IpFilterSecurity implements SecurityModuleInterface, ConfigAware
+class IpFilterSecurity extends AbstractSecurityModule
 {
     protected $allowedIps = false;
 
@@ -32,7 +30,7 @@ class IpFilterSecurity implements SecurityModuleInterface, ConfigAware
     /**
      * {@inheritdoc}
      */
-    public function authorize(Request $request)
+    public function isAuthorized(Request $request)
     {
         if ($this->allowedIps === false) {
             return true;

@@ -1,27 +1,17 @@
 <?php
 namespace Inspirio\Deployer\Security;
 
-
-use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Config\ConfigAware;
+use Inspirio\Deployer\RenderableModuleInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class PassPhraseSecurity implements SecurityModuleInterface, ConfigAware
+abstract class AbstractPassPhraseSecurityModule extends AbstractSecurityModule implements RenderableModuleInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function setConfig(Config $config)
-    {
-
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function authorize(Request $request)
+    public function isAuthorized(Request $request)
     {
         $session = $request->getSession();
 
