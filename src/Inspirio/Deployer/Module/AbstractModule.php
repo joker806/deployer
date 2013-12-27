@@ -64,7 +64,7 @@ abstract class AbstractModule implements ModuleInterface
     /**
      * {@inheritdoc}
      */
-    public function render(Request $request)
+    public function render(\Twig_Environment $twig, Request $request)
     {
         throw new \RuntimeException("{$this->getName()} module can't be rendered.");
     }

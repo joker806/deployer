@@ -24,7 +24,7 @@ abstract class AbstractDeploymentModule extends AbstractModule implements Deploy
     /**
      * {@inheritdoc}
      */
-    public function render(Request $request)
+    public function render(\Twig_Environment $twig, Request $request)
     {
         $sectionName = $request->query->get('section');
 

@@ -67,7 +67,7 @@ class ModuleRenderer {
             throw new \RuntimeException("Can't sub-render module {$module}, call the renderModule method first");
         }
 
-        $data = $module->render($this->request);
+        $data = $module->render($this->twig, $this->request);
 
         // rendered content returned
         if (is_scalar($data)) {

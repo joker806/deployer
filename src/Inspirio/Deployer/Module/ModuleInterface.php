@@ -30,10 +30,11 @@ interface ModuleInterface
     /**
      * Renders user interface of the module.
      *
-     * @param Request $request
+     * @param \Twig_Environment $twig
+     * @param Request           $request
      *
      * @return string rendered web page
-     * @return array  data for the same-named template
+     * @return string data for the same-named template
      */
-    public function render(Request $request);
+    public function render(\Twig_Environment $twig, Request $request);
 }

@@ -111,7 +111,7 @@ class ChoiceStarter extends AbstractStarterModule
     /**
      * {@inheritdoc}
      */
-    public function render(Request $request)
+    public function render(\Twig_Environment $twig, Request $request)
     {
         $children = array();
         foreach ($this->children as $child) {
