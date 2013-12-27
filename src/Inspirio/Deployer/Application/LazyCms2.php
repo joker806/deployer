@@ -30,22 +30,6 @@ class LazyCms2 implements ApplicationInterface {
     /**
      * {@inheritdoc}
      */
-    public function getProjectInfo() {
-        $info = array(
-            'name'    => 'unknown',
-            'version' => '?.?',
-        );
-
-        if (file_exists($this->appDir .'/.version')) {
-            $info['version'] = file_get_contents($this->appDir .'/.version');
-        }
-
-        return $info;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getDatabaseConnection() {
         $defaults = array(
             'host'     => 'localhost',

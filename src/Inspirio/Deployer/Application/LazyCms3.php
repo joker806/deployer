@@ -2,7 +2,6 @@
 namespace Inspirio\Deployer\Application;
 
 use Inspirio\Deployer\DeploymentModule;
-use Inspirio\Deployer\Project;
 use Inspirio\Deployer\StarterModule;
 
 class LazyCms3 extends SymfonyApp
@@ -35,15 +34,5 @@ class LazyCms3 extends SymfonyApp
     public function getHomeModuleName()
     {
         return 'info';
-    }
-
-    /**
-     * Returns project name and version,
-     *
-     * @return array
-     */
-    public function getProjectInfo()
-    {
-        return new Project('a');
     }
 }

@@ -3,7 +3,6 @@ namespace Inspirio\Deployer\Application;
 
 use Inspirio\Deployer\StarterModule\StarterModuleInterface;
 use Inspirio\Deployer\DeploymentModule\DeploymentModuleInterface;
-use Inspirio\Deployer\ProjectInfoInterface;
 
 interface ApplicationInterface {
 
@@ -51,13 +50,6 @@ interface ApplicationInterface {
      * @return string
      */
     public function getHomeModuleName();
-
-    /**
-     * Returns project name and version,
-     *
-     * @return ProjectInfoInterface
-     */
-    public function getProjectInfo();
 
 	/**
 	 * Returns database connection.

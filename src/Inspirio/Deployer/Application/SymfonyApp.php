@@ -8,16 +8,6 @@ abstract class SymfonyApp extends AbstractApplication
 	const PARAMS_FILE = 'app/config/parameters.yml';
 
     /**
-     * Returns project name and version,
-     *
-     * @return array
-     */
-    public function getProjectInfo()
-    {
-        // TODO: Implement getProjectInfo() method.
-    }
-
-    /**
 	 * {@inheritdoc}
 	 */
 	public function getDatabaseConnection()
