@@ -1,18 +1,35 @@
 <?php
 namespace Inspirio\Deployer\Starter;
 
+use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Command\SubversionCommand;
+use Inspirio\Deployer\Config\Config;
+use Inspirio\Deployer\ConfigAwareModuleInterface;
+use Inspirio\Deployer\RenderableModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
-class SubversionCheckout extends AbstractStarterModule
+class SubversionCheckout extends AbstractStarterModule implements RenderableModuleInterface, ConfigAwareModuleInterface
 {
+
+    /**
+     * @var Config
+     */
+    private $config;
+
     /**
      * {@inheritdoc}
      */
-    public function isStarted()
+    public function setConfig(Config $config)
     {
-        return (bool)$this->app->findFile('.svn');
+        $this->config = $config;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isStarted(ApplicationInterface $app)
+    {
+        return (bool)$app->findFile('.svn');
     }
 
     /**
@@ -20,7 +37,7 @@ class SubversionCheckout extends AbstractStarterModule
      */
     public function render(Request $request)
     {
-        $repos = $this->config->get('subversion');
+        $repos = $this->config['subversion'];
         $repos = is_array($repos) ? array_keys($repos) : array();
 
         return array(
@@ -31,8 +48,15 @@ class SubversionCheckout extends AbstractStarterModule
         );
     }
 
-    public function startup($repoName, $repoPath, $revision)
+    /**
+     * {@inheritdoc}
+     */
+    public function startupAction(array $data)
     {
+//        $repoName = $data['']
+//
+//        $repoName, $repoPath, $revision
+
         $subversion = new SubversionCommand($this->app->getRootPath());
 
         $configurator = $this->getCommandConfigurator();
@@ -40,6 +64,6 @@ class SubversionCheckout extends AbstractStarterModule
 
         $repoConfig = $this->config->get('subversion', $repoName);
 
-        $subversion->checkout($repoConfig['url'] .'/'. $repoPath, $revision);
+        $subversion->checkout($repoConfig['url'] . '/' . $repoPath, $revision);
     }
 }

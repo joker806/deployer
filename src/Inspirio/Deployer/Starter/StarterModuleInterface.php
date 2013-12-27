@@ -3,8 +3,6 @@ namespace Inspirio\Deployer\Starter;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\ModuleInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Project starter module interface.
