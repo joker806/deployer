@@ -2,7 +2,6 @@
 namespace Inspirio\Deployer\SecurityModule;
 
 use Inspirio\Deployer\Config;
-use Symfony\Component\HttpFoundation\Request;
 
 class StaticPassPhraseSecurity extends AbstractPassPhraseSecurityModule
 {
@@ -25,15 +24,6 @@ class StaticPassPhraseSecurity extends AbstractPassPhraseSecurityModule
 
         $this->phrase = $phrase;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function render(\Twig_Environment $twig, Request $request)
-    {
-        return array();
-    }
-
 
     /**
      * {@inheritdoc}

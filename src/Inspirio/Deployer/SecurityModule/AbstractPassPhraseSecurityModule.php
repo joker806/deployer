@@ -33,19 +33,20 @@ abstract class AbstractPassPhraseSecurityModule extends AbstractSecurityModule
             }
 
             return true;
+
+        } else {
+            $session->remove('security_phrase');
+
+            return false;
         }
+    }
 
-        $session->remove('security_phrase');
-
-        if ($phrase !== null) {
-            $error = 'Invalid pass-phrase.';
-        }
-
-        ob_start();
-        include __DIR__ . '/view/passPhraseScreen.html.php';
-        $content = ob_get_clean();
-
-        return new Response($content, 401);
+    /**
+     * {@inheritdoc}
+     */
+    public function render(\Twig_Environment $twig, Request $request)
+    {
+        return new Response($twig->render('security/passPhraseScreen.twig'), 401);
     }
 
     /**

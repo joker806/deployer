@@ -20,7 +20,7 @@ class ActionRunner {
     public function runAction(ModuleInterface $module, Request $request)
     {
         if (!$request->request->has('run')) {
-            throw new \InvalidArgumentException("Missing 'run' parameter data");
+            throw new \InvalidArgumentException("Missing 'run' parameter");
         }
 
         $action = $request->request->get('run');
@@ -32,7 +32,7 @@ class ActionRunner {
         try {
             $actionMethod = new \ReflectionMethod($module, $actionMethodName);
         } catch (\ReflectionException $e) {
-            // handled later
+            // handled below
         }
 
         if (!$actionMethod || !$actionMethod->isPublic()) {

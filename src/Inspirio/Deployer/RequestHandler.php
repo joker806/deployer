@@ -76,16 +76,16 @@ class RequestHandler
      */
     public function handleRequest(Request $request)
     {
-        if (
-            !$request->isMethod('get') &&
-            !($request->isMethod('post') && $request->query->has('module'))
-        ) {
-            return new Response('405 Method Not Allowed', 405);
-        }
-
-        if ($request->isMethod('post') && !$request->isXmlHttpRequest()) {
-            throw new \Exception('Handling of non-ajax POST requests is not implemented yet');
-        }
+//        if (
+//            !$request->isMethod('get') &&
+//            !($request->isMethod('post') && $request->query->has('module'))
+//        ) {
+//            return new Response('405 Method Not Allowed', 405);
+//        }
+//
+//        if ($request->isMethod('post') && !$request->isXmlHttpRequest()) {
+//            throw new \Exception('Handling of non-ajax POST requests is not implemented yet');
+//        }
 
         $moduleName = $request->query->get('module');
 
