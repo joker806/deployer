@@ -98,10 +98,6 @@ class RequestHandler
             $request->attributes->set('module', $result);
 
             if ($request->isMethod('get')) {
-                if (!$result instanceof RenderableModuleInterface) {
-                    return new Response("GET method no allowed for module '{$moduleName}'.", 405);
-                }
-
                 $content = $this->moduleRenderer->renderModule($request, $middleware, $result);
                 return new Response($content);
 

@@ -5,10 +5,9 @@ use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Command\SubversionCommand;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\ConfigAwareModuleInterface;
-use Inspirio\Deployer\RenderableModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class SubversionCheckout extends AbstractStarterModule implements RenderableModuleInterface, ConfigAwareModuleInterface
+class SubversionCheckout extends AbstractStarterModule implements ConfigAwareModuleInterface
 {
 
     /**

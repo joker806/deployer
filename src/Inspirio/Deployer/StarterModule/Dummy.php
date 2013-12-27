@@ -2,10 +2,9 @@
 namespace Inspirio\Deployer\StarterModule;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
-use Inspirio\Deployer\RenderableModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class Dummy extends AbstractStarterModule implements RenderableModuleInterface
+class Dummy extends AbstractStarterModule
 {
     /**
      * {@inheritdoc}

@@ -1,12 +1,11 @@
 <?php
 namespace Inspirio\Deployer\SecurityModule;
 
-use Inspirio\Deployer\RenderableModuleInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class AbstractPassPhraseSecurityModule extends AbstractSecurityModule implements RenderableModuleInterface
+abstract class AbstractPassPhraseSecurityModule extends AbstractSecurityModule
 {
     /**
      * {@inheritdoc}

@@ -29,14 +29,14 @@ class ModuleRenderer {
     /**
      * Renders the module.
      *
-     * @param Request                   $request
-     * @param MiddlewareInterface       $middleware
-     * @param RenderableModuleInterface $module
+     * @param Request             $request
+     * @param MiddlewareInterface $middleware
+     * @param ModuleInterface     $module
      *
      * @throws \RuntimeException
      * @return string
      */
-    public function renderModule(Request $request, MiddlewareInterface $middleware, RenderableModuleInterface $module)
+    public function renderModule(Request $request, MiddlewareInterface $middleware, ModuleInterface $module)
     {
         $this->request = $request;
 
@@ -55,12 +55,12 @@ class ModuleRenderer {
     /**
      * Renders the module.
      *
-     * @param RenderableModuleInterface $module
+     * @param ModuleInterface $module
      *
      * @throws \RuntimeException
      * @return string
      */
-    public function subRenderModule(RenderableModuleInterface $module)
+    public function subRenderModule(ModuleInterface $module)
     {
         if ($this->request === null) {
             throw new \RuntimeException("Can't sub-render module {$module}, call the renderModule method first");

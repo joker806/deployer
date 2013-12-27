@@ -5,10 +5,9 @@ use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
 use Inspirio\Deployer\ConfigAwareModuleInterface;
 use Inspirio\Deployer\Exception\Request\NotFoundException;
-use Inspirio\Deployer\RenderableModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class ChoiceStarter extends AbstractStarterModule implements RenderableModuleInterface, ConfigAwareModuleInterface
+class ChoiceStarter extends AbstractStarterModule implements ConfigAwareModuleInterface
 {
     /**
      * @var string

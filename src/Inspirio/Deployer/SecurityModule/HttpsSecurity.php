@@ -70,4 +70,12 @@ class HttpsSecurity extends AbstractSecurityModule implements ConfigAwareModuleI
 
         return true;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function render(Request $request)
+    {
+        throw new \RuntimeException("HttpSecurity module can't be rendered.");
+    }
 }

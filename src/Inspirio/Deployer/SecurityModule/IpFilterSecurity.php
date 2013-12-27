@@ -38,4 +38,12 @@ class IpFilterSecurity extends AbstractSecurityModule
 
         return in_array($request->getClientIp(), $this->allowedIps);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function render(Request $request)
+    {
+        throw new \RuntimeException("IpFilterSecurity module can't be rendered.");
+    }
 }
