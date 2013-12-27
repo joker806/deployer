@@ -113,12 +113,6 @@ class RequestHandler
                 );
             }
 
-            // found module does not match requested module (or no specific module requested)
-            // redirect to found module
-            if ($module->getName() !== $moduleName) {
-                return new RedirectResponse('/?module='. $module->getName());
-            }
-
             $request->attributes->set('module', $module);
 
             if ($request->isMethod('get')) {

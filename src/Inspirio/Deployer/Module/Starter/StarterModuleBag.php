@@ -4,6 +4,7 @@ namespace Inspirio\Deployer\Module\Starter;
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Module\AbstractModuleBag;
 use Inspirio\Deployer\Module\ModuleInterface;
+use Inspirio\Deployer\Response\ModuleRedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,7 +35,7 @@ class StarterModuleBag extends AbstractModuleBag
         }
 
         if ($moduleName === null || $module->getName() === $moduleName) {
-            return $module;
+            return new ModuleRedirectResponse($module);
         }
 
         return new Response('412 Precondition Failed', 412);

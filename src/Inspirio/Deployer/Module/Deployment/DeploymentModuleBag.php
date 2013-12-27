@@ -41,11 +41,11 @@ class DeploymentModuleBag extends AbstractModuleBag
      */
     protected function checkModule(Request $request, ModuleInterface $module, $moduleName)
     {
-        if (!$module->isEnabled()) {
+        if ($module->getName() !== $moduleName) {
             return null;
         }
 
-        if ($module->getName() !== $moduleName) {
+        if (!$module->isEnabled()) {
             return null;
         }
 
