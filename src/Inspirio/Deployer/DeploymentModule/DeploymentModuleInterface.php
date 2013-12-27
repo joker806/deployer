@@ -1,15 +1,14 @@
 <?php
-namespace Inspirio\Deployer\Module;
+namespace Inspirio\Deployer\DeploymentModule;
 
 use Inspirio\Deployer\ModuleInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Action interface.
  *
  * @author Josef Martinec <josef.martinec@inspirio.cz>
  */
-interface ActionModuleInterface extends ModuleInterface
+interface DeploymentModuleInterface extends ModuleInterface
 {
     /**
      * Checks if the action is enabled.

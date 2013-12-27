@@ -1,9 +1,9 @@
 <?php
-namespace Inspirio\Deployer\Module\LogBrowser;
+namespace Inspirio\Deployer\DeploymentModule\LogBrowser;
 
-use Inspirio\Deployer\Module\AbstractActionModule;
+use Inspirio\Deployer\DeploymentModule\AbstractDeploymentModule;
 
-class LogBrowserModule extends AbstractActionModule
+class LogBrowserModule extends AbstractDeploymentModule
 {
     const SERVER_LOG_PATH = '../statistics/logs';
     const APPLICATION_LOG_PATH = '';

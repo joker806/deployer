@@ -1,10 +1,10 @@
 <?php
-namespace Inspirio\Deployer\Module\Maintenance;
+namespace Inspirio\Deployer\DeploymentModule\Maintenance;
 
-use Inspirio\Deployer\Module\AbstractActionModule;
+use Inspirio\Deployer\DeploymentModule\AbstractDeploymentModule;
 use Inspirio\Deployer\Command\ProcessCommand;
 
-class MaintenanceModule extends AbstractActionModule
+class MaintenanceModule extends AbstractDeploymentModule
 {
 	/**
 	 * {@inheritdoc}
