@@ -3,7 +3,6 @@ namespace Inspirio\Deployer\StarterModule;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Config\Config;
-use Inspirio\Deployer\Exception\Request\NotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 
 class ChoiceStarter extends AbstractStarterModule
@@ -123,7 +122,7 @@ class ChoiceStarter extends AbstractStarterModule
         $activeChildName  = $request->query->get($activeChildKey, $defaultChildName);
 
         if (!isset($children[$activeChildName])) {
-            throw new NotFoundException();
+            throw new \RuntimeException("Module {$activeChildName} not found.");
         }
 
         return array(
