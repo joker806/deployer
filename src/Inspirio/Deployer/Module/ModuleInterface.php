@@ -29,6 +29,13 @@ interface ModuleInterface
     public function setConfig(Config $config);
 
     /**
+     * Returns the module template category.
+     *
+     * @return string
+     */
+    public function getTemplatePath();
+
+    /**
      * Renders user interface of the module.
      *
      * @param \Twig_Environment $twig

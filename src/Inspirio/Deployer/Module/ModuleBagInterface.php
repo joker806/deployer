@@ -8,13 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 interface ModuleBagInterface
 {
     /**
-     * Returns template category name.
-     *
-     * @return string
-     */
-    public function getTemplateCategory();
-
-    /**
      * Picks a module, that should handle the request.
      *
      * @param Config      $config

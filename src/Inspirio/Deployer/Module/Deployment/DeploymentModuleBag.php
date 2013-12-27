@@ -51,12 +51,4 @@ class DeploymentModuleBag extends AbstractModuleBag
 
         return $module;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTemplateCategory()
-    {
-        return 'deployment';
-    }
 }

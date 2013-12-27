@@ -3,7 +3,6 @@ namespace Inspirio\Deployer;
 
 use Inspirio\Deployer\Module\ModuleBagInterface;
 use Inspirio\Deployer\Module\ModuleInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -116,7 +115,7 @@ class RequestHandler
             $request->attributes->set('module', $module);
 
             if ($request->isMethod('get')) {
-                return $this->moduleRenderer->renderModule($request, $bag, $module);
+                return $this->moduleRenderer->renderModule($request, $module);
 
             } else {
                 return $this->actionRunner->runAction($module, $request);

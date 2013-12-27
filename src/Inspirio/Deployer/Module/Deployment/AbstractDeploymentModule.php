@@ -16,6 +16,14 @@ abstract class AbstractDeploymentModule extends AbstractModule implements Deploy
     /**
      * {@inheritdoc}
      */
+    public function getTemplatePath()
+    {
+        return 'deployment';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isEnabled()
     {
         return true;

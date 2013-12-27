@@ -23,12 +23,4 @@ class SecurityModuleBag extends AbstractModuleBag
 
         return new Response('401 Unauthorized', 401);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTemplateCategory()
-    {
-        return 'security';
-    }
 }

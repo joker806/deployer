@@ -40,12 +40,4 @@ class StarterModuleBag extends AbstractModuleBag
 
         return new Response('412 Precondition Failed', 412);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTemplateCategory()
-    {
-        return 'starter';
-    }
 }

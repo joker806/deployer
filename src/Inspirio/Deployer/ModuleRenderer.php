@@ -19,11 +19,6 @@ class ModuleRenderer {
     private $request = null;
 
     /**
-     * @var ModuleBagInterface|null
-     */
-    private $moduleBag = null;
-
-    /**
      * Constructor.
      *
      * @param \Twig_Environment $twig
@@ -36,22 +31,20 @@ class ModuleRenderer {
     /**
      * Renders the module.
      *
-     * @param Request            $request
-     * @param ModuleBagInterface $moduleBag
-     * @param ModuleInterface    $module
+     * @param Request         $request
+     * @param ModuleInterface $module
      *
      * @throws \RuntimeException
      * @return Response
      */
-    public function renderModule(Request $request, ModuleBagInterface $moduleBag, ModuleInterface $module)
+    public function renderModule(Request $request, ModuleInterface $module)
     {
-        $this->request   = $request;
-        $this->moduleBag = $moduleBag;
+        $this->request = $request;
 
         $response = $this->subRenderModule($module);
 
         if (!$response instanceof Response) {
-            $template = $moduleBag->getTemplateCategory() .'/layout.twig';
+            $template = $module->getTemplatePath() .'/layout.twig';
 
             $data['module']        = $module;
             $data['moduleContent'] = $response;
@@ -61,8 +54,7 @@ class ModuleRenderer {
             $response = new Response($response);
         }
 
-        $this->moduleBag = null;
-        $this->request   = null;
+        $this->request = null;
 
         return $response;
     }
@@ -104,7 +96,7 @@ class ModuleRenderer {
         $data['request'] = $this->request;
 
         $template = lcfirst(implode('', array_map('ucfirst', explode('_', $module->getName()))));
-        $template = $this->moduleBag->getTemplateCategory() .'/'. $template .'.twig';
+        $template = $module->getTemplatePath() .'/'. $template .'.twig';
 
         return $this->twig->render($template, $data);
     }
