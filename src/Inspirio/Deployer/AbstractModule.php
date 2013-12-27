@@ -2,6 +2,7 @@
 namespace Inspirio\Deployer;
 
 use Inspirio\Deployer\Config\Config;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractModule implements ModuleInterface
 {
@@ -58,5 +59,13 @@ abstract class AbstractModule implements ModuleInterface
     public function setConfig(Config $config)
     {
         // do nothing by default
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function render(Request $request)
+    {
+        throw new \RuntimeException("{$this->getName()} module can't be rendered.");
     }
 }

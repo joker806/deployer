@@ -69,12 +69,4 @@ class HttpsSecurity extends AbstractSecurityModule
 
         return true;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function render(Request $request)
-    {
-        throw new \RuntimeException("HttpSecurity module can't be rendered.");
-    }
 }
