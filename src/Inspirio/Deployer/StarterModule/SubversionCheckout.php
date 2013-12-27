@@ -9,9 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SubversionCheckout extends AbstractStarterModule
 {
-
     /**
-     * @var \Inspirio\Deployer\Config
+     * @var Config
      */
     private $config;
 
@@ -36,7 +35,7 @@ class SubversionCheckout extends AbstractStarterModule
      */
     public function render(Request $request)
     {
-        $repos = $this->config['subversion'];
+        $repos = $this->config->get('subversion');
         $repos = is_array($repos) ? array_keys($repos) : array();
 
         return array(

@@ -1,7 +1,8 @@
 <?php
 namespace Inspirio\Deployer\Module;
 
-use Inspirio\Deployer\Module\ModuleInterface;
+use Inspirio\Deployer\Config;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractModuleBag implements ModuleBagInterface, \IteratorAggregate {
 
@@ -32,4 +33,29 @@ abstract class AbstractModuleBag implements ModuleBagInterface, \IteratorAggrega
     {
         return new \ArrayIterator($this->modules);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function pickModule(Config $config, Request $request, $moduleName)
+    {
+        foreach ($this->modules as $module) {
+            $module->setConfig($config);
+
+            if ($this->checkModule($request, $module, $moduleName)) {
+                return $module;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Request         $request
+     * @param ModuleInterface $module
+     * @param string|null     $moduleName
+     *
+     * @return bool
+     */
+    abstract protected function checkModule(Request $request, ModuleInterface $module, $moduleName);
 }

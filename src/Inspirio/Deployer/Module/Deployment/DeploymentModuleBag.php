@@ -2,12 +2,11 @@
 namespace Inspirio\Deployer\Module\Deployment;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
+use Inspirio\Deployer\Config;
 use Inspirio\Deployer\Module\AbstractModuleBag;
+use Inspirio\Deployer\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @property DeploymentModuleInterface[] $modules
- */
 class DeploymentModuleBag extends AbstractModuleBag
 {
     /**
@@ -28,25 +27,29 @@ class DeploymentModuleBag extends AbstractModuleBag
     /**
      * {@inheritdoc}
      */
-    public function pickModule(Request $request, $moduleName = null)
+    public function pickModule(Config $config, Request $request, $moduleName)
     {
         if ($moduleName === null) {
             $moduleName = $this->app->getHomeModuleName();
         }
 
-        foreach ($this->app->getDeploymentModules() as $module) {
-            if ($module->getName() !== $moduleName) {
-                continue;
-            }
+        return parent::pickModule($config, $request, $moduleName);
+    }
 
-            if (!$module->isEnabled()) {
-                return null;
-            }
-
-            return $module;
+    /**
+     * @param DeploymentModuleInterface $module
+     */
+    protected function checkModule(Request $request, ModuleInterface $module, $moduleName)
+    {
+        if (!$module->isEnabled()) {
+            return null;
         }
 
-        return null;
+        if ($module->getName() !== $moduleName) {
+            return null;
+        }
+
+        return $module;
     }
 
     /**

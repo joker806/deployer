@@ -2,10 +2,7 @@
 namespace Inspirio\Deployer;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
-use Inspirio\Deployer\Config;
-use Inspirio\Deployer\Module\Deployment\DeploymentModuleBag;
 use Inspirio\Deployer\Module\Security\SecurityModuleBag;
-use Inspirio\Deployer\Module\Starter\StarterModuleBag;
 
 class Container extends \Pimple
 {
@@ -22,9 +19,14 @@ class Container extends \Pimple
         });
 
         $this['request_handler'] = $this->share(function(Container $c) {
-            /** @var $app ApplicationInterface */
-            $handler = new RequestHandler($c['module_renderer'], $c['action_runner']);
-            $app     = $c['app'];
+            $handler = new RequestHandler(
+                $c['config'],
+                $c['module_renderer'],
+                $c['action_runner']
+            );
+
+                /** @var $app ApplicationInterface */
+            $app = $c['app'];
 
             $handler
                 ->addModuleBag($c['module.security'])

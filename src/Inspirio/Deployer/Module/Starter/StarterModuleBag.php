@@ -3,12 +3,10 @@ namespace Inspirio\Deployer\Module\Starter;
 
 use Inspirio\Deployer\Application\ApplicationInterface;
 use Inspirio\Deployer\Module\AbstractModuleBag;
+use Inspirio\Deployer\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @property StarterModuleInterface[] $modules
- */
 class StarterModuleBag extends AbstractModuleBag
 {
     /**
@@ -27,23 +25,19 @@ class StarterModuleBag extends AbstractModuleBag
     }
 
     /**
-     * {@inheritdoc}
+     * @param StarterModuleInterface $module
      */
-    public function pickModule(Request $request, $moduleName = null)
+    protected function checkModule(Request $request, ModuleInterface $module, $moduleName)
     {
-        foreach ($this->modules as $module) {
-            if ($module->isStarted($this->app)) {
-                continue;
-            }
-
-            if ($moduleName === null || $moduleName === $module->getName()) {
-                return $module;
-            }
-
-            return new Response('412 Precondition Failed', 412);
+        if ($module->isStarted($this->app)) {
+            return null;
         }
 
-        return null;
+        if ($moduleName === null || $module->getName() === $moduleName) {
+            return $module;
+        }
+
+        return new Response('412 Precondition Failed', 412);
     }
 
     /**

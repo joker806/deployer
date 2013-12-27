@@ -2,32 +2,26 @@
 namespace Inspirio\Deployer\Module\Security;
 
 use Inspirio\Deployer\Module\AbstractModuleBag;
+use Inspirio\Deployer\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @property SecurityModuleInterface[] $modules
- */
 class SecurityModuleBag extends AbstractModuleBag
 {
     /**
-     * {@inheritdoc}
+     * @param SecurityModuleInterface $module
      */
-    public function pickModule(Request $request, $moduleName = null)
+    protected function checkModule(Request $request, ModuleInterface $module, $moduleName)
     {
-        foreach ($this->modules as $module) {
-            if ($module->isAuthorized($request)) {
-                continue;
-            }
-
-            if ($moduleName === null || $module->getName() === $moduleName) {
-                return $module;
-            }
-
-            return new Response('401 Unauthorized', 401);
+        if ($module->isAuthorized($request)) {
+            return null;
         }
 
-        return null;
+        if ($moduleName === null || $module->getName() === $moduleName) {
+            return $module;
+        }
+
+        return new Response('401 Unauthorized', 401);
     }
 
     /**

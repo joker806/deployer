@@ -14,6 +14,12 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RequestHandler
 {
+
+    /**
+     * @var Config
+     */
+    private $config;
+
     /**
      * @var ModuleRenderer
      */
@@ -32,11 +38,16 @@ class RequestHandler
     /**
      * Constructor.
      *
+     * @param Config         $config
      * @param ModuleRenderer $renderer
      * @param ActionRunner   $runner
      */
-    public function __construct(ModuleRenderer $renderer, ActionRunner $runner)
-    {
+    public function __construct(
+        Config $config,
+        ModuleRenderer $renderer,
+        ActionRunner $runner
+    ) {
+        $this->config         = $config;
         $this->moduleRenderer = $renderer;
         $this->actionRunner   = $runner;
     }
@@ -79,7 +90,7 @@ class RequestHandler
         $moduleName = $request->query->get('module');
 
         foreach ($this->moduleBags as $bag) {
-            $module = $bag->pickModule($request, $moduleName);
+            $module = $bag->pickModule($this->config, $request, $moduleName);
 
             // no module from the current bag
             // try another bag
