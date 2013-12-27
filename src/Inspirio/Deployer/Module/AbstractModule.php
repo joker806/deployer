@@ -28,6 +28,7 @@ abstract class AbstractModule implements ModuleInterface
                 $name = substr($name, $slashPos + 1);
             }
 
+            $name = lcfirst($name);
             $name = preg_replace('/[A-Z]/', '_$0', $name);
             $name = strtolower($name);
 
