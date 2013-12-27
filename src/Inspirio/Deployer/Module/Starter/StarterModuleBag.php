@@ -43,8 +43,8 @@ class StarterModuleBag extends AbstractModuleBag
     /**
      * {@inheritdoc}
      */
-    public function getTemplateLayout()
+    public function getTemplateCategory()
     {
-        return 'starterLayout.twig';
+        return 'starter';
     }
 }

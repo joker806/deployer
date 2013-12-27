@@ -2,18 +2,17 @@
 namespace Inspirio\Deployer\Module;
 
 use Inspirio\Deployer\Config;
-use Inspirio\Deployer\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 interface ModuleBagInterface
 {
     /**
-     * Returns template layout filename.
+     * Returns template category name.
      *
      * @return string
      */
-    public function getTemplateLayout();
+    public function getTemplateCategory();
 
     /**
      * Picks a module, that should handle the request.

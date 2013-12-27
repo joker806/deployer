@@ -4,6 +4,7 @@ namespace Inspirio\Deployer;
 use Inspirio\Deployer\Module\ModuleBagInterface;
 use Inspirio\Deployer\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ModuleRenderer {
 
@@ -16,6 +17,11 @@ class ModuleRenderer {
      * @var Request|null
      */
     private $request = null;
+
+    /**
+     * @var ModuleBagInterface|null
+     */
+    private $moduleBag = null;
 
     /**
      * Constructor.
@@ -31,26 +37,34 @@ class ModuleRenderer {
      * Renders the module.
      *
      * @param Request            $request
-     * @param ModuleBagInterface $bag
+     * @param ModuleBagInterface $moduleBag
      * @param ModuleInterface    $module
      *
      * @throws \RuntimeException
-     * @return string
+     * @return Response
      */
-    public function renderModule(Request $request, ModuleBagInterface $bag, ModuleInterface $module)
+    public function renderModule(Request $request, ModuleBagInterface $moduleBag, ModuleInterface $module)
     {
-        $this->request = $request;
+        $this->request   = $request;
+        $this->moduleBag = $moduleBag;
 
-        $template = $bag->getTemplateLayout();
+        $response = $this->subRenderModule($module);
 
-        $data['module']  = $module;
-        $data['request'] = $request;
+        if (!$response instanceof Response) {
+            $template = $moduleBag->getTemplateCategory() .'/layout.twig';
 
-        $content = $this->twig->render($template, $data);
+            $data['module']        = $module;
+            $data['moduleContent'] = $response;
+            $data['request']       = $request;
 
-        $this->request = null;
+            $response = $this->twig->render($template, $data);
+            $response = new Response($response);
+        }
 
-        return $content;
+        $this->moduleBag = null;
+        $this->request   = null;
+
+        return $response;
     }
 
     /**
@@ -59,7 +73,7 @@ class ModuleRenderer {
      * @param ModuleInterface $module
      *
      * @throws \RuntimeException
-     * @return string
+     * @return Response|string
      */
     public function subRenderModule(ModuleInterface $module)
     {
@@ -69,9 +83,14 @@ class ModuleRenderer {
 
         $data = $module->render($this->twig, $this->request);
 
+        // a complete response returned
+        if ($data instanceof Response) {
+            return $data;
+        }
+
         // rendered content returned
         if (is_scalar($data)) {
-            return $data;
+            return (string)$data;
         }
 
         // invalid content
@@ -84,11 +103,8 @@ class ModuleRenderer {
         $data['module']  = $module;
         $data['request'] = $this->request;
 
-        $classRefl = new \ReflectionObject($module);
-        $classDir  = dirname($classRefl->getFileName());
-
         $template = lcfirst(implode('', array_map('ucfirst', explode('_', $module->getName()))));
-        $template  = $classDir .'/view/'. $template .'.twig';
+        $template = $this->moduleBag->getTemplateCategory() .'/'. $template .'.twig';
 
         return $this->twig->render($template, $data);
     }

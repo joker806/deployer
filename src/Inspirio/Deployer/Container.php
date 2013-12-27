@@ -76,10 +76,7 @@ class Container extends \Pimple
         });
 
         $this['twig'] = $this->share(function(Container $c) {
-            $loader = new \Twig_Loader_Filesystem(array(
-                '/', // TODO temporary hack to allow absolute template paths
-                $c['dir.template']
-            ));
+            $loader = new \Twig_Loader_Filesystem(array($c['dir.template']));
 
             $twig = new \Twig_Environment($loader, array(
                 'cache'            => $c['dir.home'] . '/cache',

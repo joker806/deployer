@@ -55,8 +55,8 @@ class DeploymentModuleBag extends AbstractModuleBag
     /**
      * {@inheritdoc}
      */
-    public function getTemplateLayout()
+    public function getTemplateCategory()
     {
-        return 'deploymentLayout.twig';
+        return 'deployment';
     }
 }

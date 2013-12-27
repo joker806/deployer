@@ -3,6 +3,7 @@ namespace Inspirio\Deployer\Module;
 
 use Inspirio\Deployer\Config;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 interface ModuleInterface
 {
@@ -33,8 +34,9 @@ interface ModuleInterface
      * @param \Twig_Environment $twig
      * @param Request           $request
      *
-     * @return string rendered web page
-     * @return string data for the same-named template
+     * @return Response complete response
+     * @return string   rendered web page
+     * @return array    data for the same-named template
      */
     public function render(\Twig_Environment $twig, Request $request);
 }

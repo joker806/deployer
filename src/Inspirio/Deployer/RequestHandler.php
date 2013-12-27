@@ -122,8 +122,7 @@ class RequestHandler
             $request->attributes->set('module', $module);
 
             if ($request->isMethod('get')) {
-                $content = $this->moduleRenderer->renderModule($request, $bag, $module);
-                return new Response($content);
+                return $this->moduleRenderer->renderModule($request, $bag, $module);
 
             } else {
                 return $this->actionRunner->runAction($module, $request);

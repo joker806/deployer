@@ -27,8 +27,8 @@ class SecurityModuleBag extends AbstractModuleBag
     /**
      * {@inheritdoc}
      */
-    public function getTemplateLayout()
+    public function getTemplateCategory()
     {
-        return 'securityLayout.twig';
+        return 'security';
     }
 }
