@@ -2,3 +2,4 @@ build
 deployer/vendor
 deployer/deployer.yml
 project
+.idea

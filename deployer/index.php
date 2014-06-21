@@ -25,16 +25,16 @@ ini_set('html_errors', 'On');
 $dirName = __DIR__;
 
 if (substr($dirName, 0, 7) === 'phar://') {
-	$dirName = substr($dirName, 7);
-	$dirName = dirname($dirName);
+    $dirName = substr($dirName, 7);
+    $dirName = dirname($dirName);
 }
 
-$dirName = __DIR__ .'/../project';
+$dirName = __DIR__ . '/../project';
 
 if (PHP_SAPI === 'cli') {
-	$controller = new CliHandler($dirName, $modules);
+    $controller = new CliHandler($dirName, $modules);
 } else {
-	$controller = new WebHandler($dirName, $modules, $security);
+    $controller = new WebHandler($dirName, $modules, $security);
 }
 
 echo $controller->dispatch();
